@@ -23,7 +23,7 @@
     "express": "^4.15.5",
     "mocha": "^3.5.3",
     "redis": "^2.8.0"
-  }
+  },
   "author": "CodeNinjas",
   "license": "ISC"
 }
