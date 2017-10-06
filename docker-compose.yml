@@ -4,7 +4,7 @@ services:
     build: authentication
     ports:
      - "9000:9000"
-  webFacade:
+  webfacade:
     build: webfacade
     ports:
      - "9090:9090"
