@@ -1,10 +1,10 @@
 version: '2'
 services:
   authentication:
-    build: authentication
+    build: Authentication
     ports:
      - "9000:9000"
   webFacade:
-    build: webFacade
+    build: WebFacade
     ports:
      - "9090:9090"
