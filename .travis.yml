@@ -7,8 +7,8 @@ before_install:
   - docker-compose up -d
 
 script:
-  - docker run authentication /bin/sh -c "cd /src; npm test"
-  - docker run webfacade /bin/sh -c "cd /src; npm test"
+  - docker run proepdockercontainerservices_proauthentication /bin/sh -c "cd /src; npm test"
+  - docker run proepdockercontainerservices_webfacade /bin/sh -c "cd /src; npm test"
 after_success:
   - gem install net-scp
   - gem install net-ssh
