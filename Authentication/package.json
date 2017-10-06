@@ -1,0 +1,29 @@
+{
+  "name": "authentication",
+  "version": "1.0.0",
+  "description": "Authentication Service by Fontys students.",
+  "main": "server.js",
+  "scripts": {
+    "test": "mocha",
+    "start": "node server.js"
+  },
+   "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bilgeryahov/ProEP_DockerContainerServices.git"
+  },
+  "keywords": [
+    "Service",
+    "Authentication"
+  ],
+   "bugs": {
+    "url": "https://github.com/bilgeryahov/ProEP_DockerContainerServices/issues"
+  },
+  "homepage": "https://github.com/bilgeryahov/ProEP_DockerContainerServices/issues#readme",
+  "dependencies": {
+    "express": "^4.15.5",
+    "mocha": "^3.5.3",
+    "redis": "^2.8.0"
+  }
+  "author": "CodeNinjas",
+  "license": "ISC"
+}
