@@ -8,3 +8,12 @@ services:
     build: webfacade
     ports:
      - "9090:9090"
+  db:
+    image: "postgres:alpine"
+    restart: always
+    environment:
+      - POSTGRES_DB=show_me_db
+      - PSOTGRES_USER=showme
+      - POSTGRES_PASSWORD=showme
+    ports:
+      - "5432:5432"
