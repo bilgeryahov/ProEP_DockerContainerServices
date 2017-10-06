@@ -15,5 +15,3 @@ services:
       - POSTGRES_DB=show_me_db
       - PSOTGRES_USER=showme
       - POSTGRES_PASSWORD=showme
-    ports:
-      - "5432:5432"
