@@ -8,6 +8,12 @@ services:
     build: webfacade
     ports:
      - "9090:9090"
+  dataservice:
+    build: dataservice
+    links:
+     - postgresql
+    ports:
+     - "1984:1984"
   postgresql:
     image: "postgres:alpine"
     restart: always

@@ -1,7 +1,7 @@
 {
-  "name": "authentication",
+  "name": "dataservice",
   "version": "1.0.0",
-  "description": "Authentication Service by Fontys students.",
+  "description": "Data Service Service by Fontys students.",
   "main": "server.js",
   "scripts": {
     "test": "mocha",
@@ -13,7 +13,8 @@
   },
   "keywords": [
     "Service",
-    "Authentication"
+    "data",
+    "Facade"
   ],
   "bugs": {
     "url": "https://github.com/bilgeryahov/ProEP_DockerContainerServices/issues"
@@ -21,7 +22,10 @@
   "homepage": "https://github.com/bilgeryahov/ProEP_DockerContainerServices/issues#readme",
   "dependencies": {
     "express": "^4.15.5",
-    "mocha": "^3.5.3"
+    "mocha": "^3.5.3",
+    "sequalize": "^4.13.10",
+    "pg": "^7.3.0",
+    "pg-hstore": "^2.3.2"
   },
   "author": "CodeNinjas",
   "license": "ISC"
