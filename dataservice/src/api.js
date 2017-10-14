@@ -1,15 +1,9 @@
-
-import {
-  graphql,
-  buildSchema,
-} from 'graphql';
+import { buildSchema } from 'graphql';
 
 export const schema = buildSchema(`
 type Query {
-  hello: String
+    hello: String
 }
 `);
 
-export const root = {
-  hello: () => 'Hello world!',
-};
+export const root = { hello: () => 'Hello world!' };

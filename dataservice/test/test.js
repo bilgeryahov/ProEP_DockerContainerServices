@@ -1,9 +1,12 @@
-const assert = require('assert');
+/* eslint-env node, mocha */
+import { graphql } from 'graphql';
 
 import {
   schema,
   root,
 } from './../src/api';
+
+const assert = require('assert');
 
 describe('Graphql', () => {
   describe('users', () => {

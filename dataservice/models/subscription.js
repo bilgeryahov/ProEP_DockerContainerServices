@@ -1,11 +1,11 @@
 
 
-module.exports = function (sequelize, DataTypes) {
+module.exports = (sequelize, DataTypes) => {
   const Task = sequelize.define('Subscription', {
     title: DataTypes.STRING,
   });
 
-  Task.associate = function (models) {
+  Task.associate = (models) => {
     // Using additional options like CASCADE etc for demonstration
     // Can also simply do Task.belongsTo(models.User);
     Task.belongsTo(models.User, {
