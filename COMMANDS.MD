@@ -15,3 +15,5 @@ docker-compose up
 docker-compose up -d
 # See what is running
 docker-compose ps
+# Run a single test
+docker-compose build && docker-compose up -d && docker run proepdockercontainerservices_dataservice /bin/sh -c "cd /src; npm test"

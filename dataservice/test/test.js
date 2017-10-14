@@ -1,13 +1,26 @@
 const assert = require('assert');
 
-describe('Array', function () {
-    describe('#indexOf()', function () {
-        it('should return -1 when the value is not present', function () {
-            assert.equal(-1, [1, 2, 3].indexOf(4));
+describe('Graphql', function () {
+    describe('users', function () {
+        it('Create a user', function () {
+            graphql(schema, '{ registerUser { "name": "testuser", "password": "testpassword" } }', root).then((response) => {
+                assert.true(response.data.succeed);
+                return graphql(schema, '{ registerUser { "name": "testuser", "password": "testpassword" } }', root);
+            }).then((response) => {
+                assert.false(response.data.succeed);
+            });
         });
 
-        it('should return index of array', function () {
-            assert.equal(1, [1, 2, 3].indexOf(2));
+        it('Login a user', function () {
+            graphql(schema, '{ users(name: "testuser", password: "testpassword") { id } }', root).then((response) => {
+                assert.integer(response.data.users.id);
+            });
+        });
+
+        it('Login a user wrong password', function () {
+            graphql(schema, '{ users(name: "testuser", password: "testpassword") { id } }', root).then((response) => {
+                assert.true(response.data.users == null);
+            });
         });
     });
 });
