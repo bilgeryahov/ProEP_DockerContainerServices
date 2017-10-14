@@ -7,6 +7,7 @@ RUN apk add --update nodejs-npm
 COPY package.json /src/package.json
 RUN cd /src; npm install
 
+
 # Bundle app source
 COPY . /src
 

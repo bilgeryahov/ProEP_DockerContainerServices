@@ -4,7 +4,7 @@
   "description": "Data Service Service by Fontys students.",
   "main": "server.js",
   "scripts": {
-    "test": "mocha",
+    "test": "mocha --compilers js:babel-core/register",
     "start": "node server.js"
   },
   "repository": {
@@ -29,5 +29,9 @@
     "graphql": "^0.11.7"
   },
   "author": "CodeNinjas",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1"
+  }
 }
