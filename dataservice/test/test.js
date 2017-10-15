@@ -59,13 +59,13 @@ describe('Graphql', () => {
     );
 
     it('Login a user', () =>
-      graphql(schema, '{ user(name: "testuser", pass: "testpassword") { id } }', root)
+      graphql(schema, '{ user(name: "testuser", email: "a@a.com", pass: "testpassword") { id } }', root)
         .then((response) => {
           assert.ok(Number.isInteger(response.data.user.id));
         }));
 
     it('Login a user wrong password', () =>
-      graphql(schema, '{ user(name: "testuser", pass: "testwrongpassword") { id } }', root).then((response) => {
+      graphql(schema, '{ user(name: "testuser", email: "a@a.com", pass: "testwrongpassword") { id } }', root).then((response) => {
         assert.ok(response.data.user == null);
       }));
   });
