@@ -1,5 +1,10 @@
 import { buildSchema } from 'graphql';
 
+const models = require('../models');
+
+// Create database if it doesn't exist
+models.sequelize.sync();
+
 export const schema = buildSchema(`
 type Query {
   hello: String

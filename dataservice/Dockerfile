@@ -12,4 +12,4 @@ RUN cd /src; npm install
 COPY . /src
 
 EXPOSE  1984
-CMD ["./node_modules/.bin/babel-node", "/src/server.js"]
+CMD ["/src/node_modules/.bin/babel-node", "/src/server.js"]

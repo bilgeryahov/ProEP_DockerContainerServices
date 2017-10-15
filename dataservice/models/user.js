@@ -7,9 +7,5 @@ module.exports = (sequelize, DataTypes) => {
     email: DataTypes.STRING,
   });
 
-  User.associate = (models) => {
-    User.hasMany(models.Task);
-  };
-
   return User;
 };
