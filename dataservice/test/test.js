@@ -9,6 +9,25 @@ import {
 const assert = require('assert');
 
 describe('Graphql', () => {
+  describe('basic', () => {
+    it(
+      'Can run graphql query',
+      () =>
+        graphql(schema, '{ hello }', root)
+          .then(
+            response =>
+              new Promise((resolve, reject) => {
+                if (response.data.hello === 'Hello world!') {
+                  resolve();
+                } else {
+                  reject(Error(`Expected response hello world but got ${JSON.stringify(response)}`));
+                }
+              }),
+            error => Promise.reject(error),
+          ),
+    );
+  });
+
   describe('users', () => {
     it('Create a user', (done) => {
       graphql(schema, '{ registerUser { "name": "testuser", "password": "testpassword" } }', root).then((response) => {
