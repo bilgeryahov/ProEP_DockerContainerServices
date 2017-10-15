@@ -19,3 +19,5 @@ docker-compose ps
 docker-compose build && docker-compose up -d && docker run proepdockercontainerservices_dataservice /bin/sh -c "cd /src; npm test"
 # Fix eslint errors automaticly
 ./node_modules/.bin/eslint . --fix
+# GraphQl endpoint
+0.0.0.0:1984/graphql

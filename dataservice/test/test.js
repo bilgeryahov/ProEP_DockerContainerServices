@@ -42,12 +42,12 @@ describe('Graphql', () => {
     it(
       'Create a user',
       () =>
-        graphql(schema, '{ registerUser { "name": "testuser", "password": "testpassword" } }', root)
+        graphql(schema, '{ registerUser (name: "testuser", pass: "testpassword") { succeed message } }', root)
           .then((response) => {
             if (!response.data.registerUser.succeed) {
               return Promise.reject(Error('Couldn\'t create first user'));
             }
-            return graphql(schema, '{ registerUser { "name": "testuser", "password": "testpassword" } }', root);
+            return graphql(schema, '{ registerUser (name: "testuser", pass: "testpassword") { succeed message } }', root);
           }).then(response =>
             new Promise((resolve, reject) => {
               if (!response.data.registerUser.succeed) {
