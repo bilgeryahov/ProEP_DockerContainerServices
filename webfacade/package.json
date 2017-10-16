@@ -4,7 +4,7 @@
   "description": "Web Facade Service by Fontys students.",
   "main": "server.js",
   "scripts": {
-    "test": "./node_modules/.bin/eslint . && mocha --compilers js:babel-core/register",
+    "test": "./node_modules/.bin/eslint . && mocha --compilers js:babel-core/register --timeout 15000",
     "start": "./node_modules/.bin/babel-node server.js"
   },
   "repository": {
@@ -25,7 +25,8 @@
     "mocha": "^3.5.3",
     "redis": "^2.8.0",
     "socket.io-client": "^2.0.3",
-    "socket.io": "^2.0.3"
+    "socket.io": "^2.0.3",
+    "graphql-request": "^1.4.0"
   },
   "author": "CodeNinjas",
   "license": "ISC",
