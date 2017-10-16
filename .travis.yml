@@ -8,8 +8,8 @@ before_install:
 
 script:
   - docker exec -t proepdockercontainerservices_dataservice_1 /bin/sh -c "cd /src; npm test"
-  - docker run proepdockercontainerservices_authentication /bin/sh -c "cd /src; npm test"
-  - docker run proepdockercontainerservices_webfacade /bin/sh -c "cd /src; npm test"
+  - docker exec -t proepdockercontainerservices_authentication_1 /bin/sh -c "cd /src; npm test"
+  - docker exec -t proepdockercontainerservices_webfacade_1 /bin/sh -c "cd /src; npm test"
   - gem install net-scp
   - gem install net-ssh
   - ruby deploy.rb
