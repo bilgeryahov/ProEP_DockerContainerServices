@@ -5,6 +5,10 @@ const client = new GraphQLClient('http://dataservice:1984/graphql', { headers: {
 
 const Isemail = require('isemail');
 
+const crypto = require('crypto');
+
+const makeHash = pw => crypto.createHash('sha256').update(`${pw} dank memes`).digest('base64'); // super secret salt
+
 export const schema = buildSchema(`
 type Query {
   hello: String
@@ -27,12 +31,12 @@ export const root =
 {
   hello: () => 'Hello world from authentication!',
   user: args =>
-    client.request('query login($name: String!, $pass: String!) { user(name: $name, pass: $pass) { id email } }', args)
+    client.request('query login($name: String!, $pass: String!) { user(name: $name, pass: $pass) { id email } }', Object.assign(args, { pass: makeHash(args.pass) }))
       .then(x => Promise.resolve(x.user))
       .catch(err => Promise.reject(err)),
   registerUser: (args) => {
     if (Isemail.validate(args.email)) {
-      return client.request('query register($name: String!, $email: String!, $pass: String!){ registerUser (name: $name, email: $email, pass: $pass ) { succeed message } }', args)
+      return client.request('query register($name: String!, $email: String!, $pass: String!){ registerUser (name: $name, email: $email, pass: $pass ) { succeed message } }', Object.assign(args, { pass: makeHash(args.pass) }))
         .then((data) => {
           console.log('Succeed request register');
           return Promise.resolve(data.registerUser);
