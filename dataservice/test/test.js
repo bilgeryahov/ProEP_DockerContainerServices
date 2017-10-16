@@ -87,7 +87,7 @@ describe('Graphql', () => {
           assert.ok(Number.isInteger(response.data.user.id));
         }));
 
-    it('Login a user wrong password', () =>
+    it('Not login a user with wrong password', () =>
       graphql(schema, '{ user(name: "testuser", pass: "testwrongpassword") { id } }', root).then((response) => {
         assert.ok(response.data.user == null);
       }));
