@@ -38,7 +38,7 @@ export const root =
       .then((count) => {
         if (count === 0) {
           models.User.create({ username: name, email, password: pass });
-          return ({ succeed: true, message: name + pass });
+          return ({ succeed: true, message: '' });
         }
         return ({ succeed: false, message: 'Name or email already exists' });
       }),
