@@ -16,7 +16,7 @@ Net::SSH.start(ENV['DEPLOYHOST'], 'codeninjauser', :password => ENV['DEPLOYPASSW
     puts("Extract zip")
     puts ssh.exec!("tar -xzvf deploy.tar.gz -C /home/codeninjauser/containers")
     puts("Stop old service")
-    puts ssh.exec!("cd containers;docker-compose stop")
+    puts ssh.exec!("cd containers;docker-compose down")
     puts("Delete other packages")
     puts ssh.exec!("docker rm `docker ps --no-trunc -aq`")
     puts("Build service")

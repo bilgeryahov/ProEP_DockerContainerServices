@@ -1,13 +1,14 @@
+/* eslint-env node, mocha */
 const assert = require('assert');
 
-describe('Array', function () {
-    describe('#indexOf()', function () {
-        it('should return -1 when the value is not present', function () {
-            assert.equal(-1, [1, 2, 3].indexOf(4));
-        });
-
-        it('should return index of array', function () {
-            assert.equal(1, [1, 2, 3].indexOf(2));
-        });
+describe('Array', () => {
+  describe('#indexOf()', () => {
+    it('should return -1 when the value is not present', () => {
+      assert.equal(-1, [1, 2, 3].indexOf(4));
     });
+
+    it('should return index of array', () => {
+      assert.equal(1, [1, 2, 3].indexOf(2));
+    });
+  });
 });

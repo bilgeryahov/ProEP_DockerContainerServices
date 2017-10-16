@@ -1,7 +1,7 @@
-FROM alpine:3.1
+FROM alpine:3.6
 
 # Update
-RUN apk add --update nodejs
+RUN apk add --update nodejs-npm
 
 # Install app dependencies
 COPY package.json /src/package.json
@@ -11,4 +11,4 @@ RUN cd /src; npm install
 COPY . /src
 
 EXPOSE  9090
-CMD ["node", "/src/server.js"]
+CMD ["/src/node_modules/.bin/babel-node", "/src/server.js"]

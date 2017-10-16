@@ -4,10 +4,10 @@
   "description": "Web Facade Service by Fontys students.",
   "main": "server.js",
   "scripts": {
-    "test": "mocha",
-    "start": "node server.js"
+    "test": "./node_modules/.bin/eslint . && mocha --compilers js:babel-core/register",
+    "start": "./node_modules/.bin/babel-node server.js"
   },
-   "repository": {
+  "repository": {
     "type": "git",
     "url": "git+https://github.com/bilgeryahov/ProEP_DockerContainerServices.git"
   },
@@ -16,7 +16,7 @@
     "Web",
     "Facade"
   ],
-   "bugs": {
+  "bugs": {
     "url": "https://github.com/bilgeryahov/ProEP_DockerContainerServices/issues"
   },
   "homepage": "https://github.com/bilgeryahov/ProEP_DockerContainerServices/issues#readme",
@@ -26,5 +26,13 @@
     "redis": "^2.8.0"
   },
   "author": "CodeNinjas",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
+    "eslint": "^4.9.0",
+    "eslint-config-airbnb-base": "^12.0.2",
+    "eslint-plugin-import": "^2.7.0"
+  }
 }

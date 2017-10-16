@@ -21,7 +21,9 @@ services:
   postgresql:
     image: "postgres:alpine"
     restart: always
+    volumes:
+     - ../dockervolumes/postgres-data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=show_me_db
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=showme
+     - POSTGRES_DB=show_me_db
+     - POSTGRES_USER=postgres
+     - POSTGRES_PASSWORD=showme
