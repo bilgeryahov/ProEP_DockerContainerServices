@@ -3,12 +3,30 @@ import { graphql } from 'graphql';
 
 import {
   schema,
+  authDb,
+  model,
   root,
 } from './../src/api';
 
 const assert = require('assert');
 
 describe('Graphql', () => {
+  before(() =>
+    authDb()
+      .then(() => {
+        console.log('Connection worked');
+        return Promise.resolve();
+      })
+      .then(() =>
+        model.User.destroy({ // Remove testdata before running
+          where: {
+            username: 'testuser',
+          },
+        }))
+      .catch((err) => {
+        console.error('Unable to connect', err);
+        return Promise.reject(Error('Initialization failed'));
+      }));
   describe('basic', () => {
     it(
       'Succeed a promise',
@@ -42,12 +60,17 @@ describe('Graphql', () => {
     it(
       'Create a user',
       () =>
-        graphql(schema, '{ registerUser (name: "testuser", pass: "testpassword") { succeed message } }', root)
+        graphql(schema, '{ registerUser (name: "testuser", email: "a@a.com", pass: "testpassword") { succeed message } }', root)
           .then((response) => {
-            if (!response.data.registerUser.succeed) {
-              return Promise.reject(Error('Couldn\'t create first user'));
+            try {
+              if (!response.data.registerUser.succeed) {
+                return Promise.reject(Error('Couldn\'t create first user'));
+              }
+            } catch (err) {
+              console.log(response);
+              return Promise.reject(Error('Exception happened'));
             }
-            return graphql(schema, '{ registerUser (name: "testuser", pass: "testpassword") { succeed message } }', root);
+            return graphql(schema, '{ registerUser (name: "testuser", email: "a@a.com", pass: "testpassword") { succeed message } }', root);
           }).then(response =>
             new Promise((resolve, reject) => {
               if (!response.data.registerUser.succeed) {
@@ -59,13 +82,13 @@ describe('Graphql', () => {
     );
 
     it('Login a user', () =>
-      graphql(schema, '{ user(name: "testuser", email: "a@a.com", pass: "testpassword") { id } }', root)
+      graphql(schema, '{ user(name: "testuser", pass: "testpassword") { id } }', root)
         .then((response) => {
           assert.ok(Number.isInteger(response.data.user.id));
         }));
 
     it('Login a user wrong password', () =>
-      graphql(schema, '{ user(name: "testuser", email: "a@a.com", pass: "testwrongpassword") { id } }', root).then((response) => {
+      graphql(schema, '{ user(name: "testuser", pass: "testwrongpassword") { id } }', root).then((response) => {
         assert.ok(response.data.user == null);
       }));
   });

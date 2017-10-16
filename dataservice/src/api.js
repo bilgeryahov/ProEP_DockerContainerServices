@@ -43,3 +43,6 @@ export const root =
         return ({ succeed: false, message: 'Name or email already exists' });
       }),
 };
+
+export const authDb = () => models.sequelize.authenticate();
+export const model = models;
