@@ -26,13 +26,13 @@ type Result {
 export const root =
 {
   hello: () => 'Hello world from authentication!',
-  user: ({ name, pass }) =>
-    client.request(`{ user(name: "${name}", pass: "${pass}") { id } }`)
+  user: args =>
+    client.request('query login($name: String!, $pass: String!) { user(name: $name, pass: $pass) { id email } }', args)
       .then(x => Promise.resolve(x.user))
       .catch(err => Promise.reject(err)),
-  registerUser: ({ name, email, pass }) => {
-    if (Isemail.validate(email)) {
-      return client.request(`{ registerUser (name: "${name}", email: "${email}", pass: "${pass}") { succeed message } }`)
+  registerUser: (args) => {
+    if (Isemail.validate(args.email)) {
+      return client.request('query register($name: String!, $email: String!, $pass: String!){ registerUser (name: $name, email: $email, pass: $pass ) { succeed message } }', args)
         .then((data) => {
           console.log('Succeed request register');
           return Promise.resolve(data.registerUser);
