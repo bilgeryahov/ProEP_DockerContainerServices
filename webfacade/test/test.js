@@ -1,14 +1,42 @@
 /* eslint-env node, mocha */
-const assert = require('assert');
+// const assert = require('assert');
+const socketioClient = require('socket.io-client');
 
-describe('Array', () => {
-  describe('#indexOf()', () => {
-    it('should return -1 when the value is not present', () => {
-      assert.equal(-1, [1, 2, 3].indexOf(4));
+const client = socketioClient('http://127.0.0.1:9090/', { forceNew: true });
+
+describe('Socketclient', () => {
+  before(() => new Promise((resolve, reject) => {
+    client.on('connect', () => {
+      resolve();
     });
 
-    it('should return index of array', () => {
-      assert.equal(1, [1, 2, 3].indexOf(2));
+    client.on('disconnect', () => {
+      reject(Error('Could not connect to server'));
+    });
+  }));
+  describe('#indexOf()', () => {
+    it('should register and login', () => {
+      const registerPromise = new Promise((resolve) => {
+        client.on('register', resolve);
+      });
+      const loginPromise = new Promise((resolve) => {
+        client.on('login', resolve);
+      });
+      client.emit('register', { name: 'steve', email: 'steve@me.com', pass: 'mypass' });
+      return registerPromise
+        .then((data) => {
+          if (!data.succeed) {
+            return Promise.reject(Error('Register failed'));
+          }
+          client.emit('login', { name: 'steve', pass: 'mypass' });
+          return loginPromise;
+        })
+        .then((data) => {
+          if (!data.succeed) {
+            return Promise.reject(Error('login failed'));
+          }
+          return Promise.resolve();
+        });
     });
   });
 });
