@@ -19,6 +19,8 @@ Net::SSH.start(ENV['DEPLOYHOST'], 'codeninjauser', :password => ENV['DEPLOYPASSW
     puts ssh.exec!("cd containers;docker-compose stop")
     puts("Delete other packages")
     puts ssh.exec!("docker rm `docker ps --no-trunc -aq`")
+    puts("Build service")
+    puts ssh.exec!("cd containers;docker-compose build")
     puts("Start service")
     puts ssh.exec!("cd containers;docker-compose up -d")
 end
