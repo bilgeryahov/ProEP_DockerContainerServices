@@ -2,6 +2,8 @@ version: '2'
 services:
   authentication:
     build: authentication
+    links:
+     - dataservice
     ports:
      - "9000:9000"
   webfacade:

@@ -28,7 +28,7 @@ describe('Authentication', () => {
       graphql(schema, '{ registerUser (name: "george", email: "george@orwell.com", pass: "Animal Farm") { succeed message } }', root)
         .then((response) => {
           try {
-            if (!response.data.registerUser.succeed) {
+            if (response.data.registerUser.succeed) {
               return Promise.reject(Error('Couldn\'t create first user'));
             }
           } catch (err) {
