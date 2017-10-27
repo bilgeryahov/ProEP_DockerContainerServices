@@ -12,12 +12,15 @@ services:
      - authentication
     ports:
      - "9090:9090"
+  streamtranscoder:
+    build: streamtranscoder
+    ports:
+     - "1984:1984"
+     - "1776:1776"
   dataservice:
     build: dataservice
     links:
      - postgresql
-    ports:
-     - "1984:1984"
   postgresql:
     image: "postgres:alpine"
     restart: always
