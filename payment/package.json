@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/bilgeryahov/ProEP_DockerContainerServices/issues#readme",
   "dependencies": {
+    "chai": "^4.1.2",
     "express": "^4.15.5",
     "mocha": "^3.5.3",
     "paypal-rest-sdk": "^1.7.1"
