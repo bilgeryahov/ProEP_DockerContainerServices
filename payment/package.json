@@ -14,7 +14,10 @@
   "keywords": [
     "Service",
     "Payment",
-    "PayPal"
+    "PayPal",
+    "Node",
+    "JS",
+    "REST"
   ],
   "bugs": {
     "url": "https://github.com/bilgeryahov/ProEP_DockerContainerServices/issues"
@@ -22,7 +25,8 @@
   "homepage": "https://github.com/bilgeryahov/ProEP_DockerContainerServices/issues#readme",
   "dependencies": {
     "express": "^4.15.5",
-    "mocha": "^3.5.3"
+    "mocha": "^3.5.3",
+    "paypal-rest-sdk": "^1.7.1"
   },
   "author": "CodeNinjas",
   "license": "ISC",
