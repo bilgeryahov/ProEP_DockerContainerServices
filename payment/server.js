@@ -8,8 +8,6 @@
  * @copyright © 2017 Code Ninjas, all rights reserved.
  */
 
-`use strict`;
-
 const express = require('express');
 const routes = require('./src/routes');
 
@@ -18,13 +16,13 @@ const PORT = 1996;
 
 const app = express();
 app.set('port', PORT);
-app.use(function(req, res, next){
-	console.log(req.method, req.url);
-	next();
+app.use((req, res, next) => {
+  console.log(req.method, req.url);
+  next();
 });
 app.use('/', routes);
 
-const server = app.listen(app.get('port'), function(){
-	let port = server.address().port;
-	console.log('Info: Server listening on port: ', port);
+const server = app.listen(app.get('port'), () => {
+  const port = server.address().port; // eslint-disable-line
+  console.log('Info: Server listening on port: ', port);
 });
