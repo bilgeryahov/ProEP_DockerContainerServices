@@ -1,0 +1,35 @@
+{
+  "name": "authentication",
+  "version": "1.0.0",
+  "description": "Authentication Service by Fontys students.",
+  "main": "server.js",
+  "scripts": {
+    "test": "./node_modules/.bin/eslint . && mocha --compilers js:babel-core/register",
+    "start": "./node_modules/.bin/babel-node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bilgeryahov/ProEP_DockerContainerServices.git"
+  },
+  "keywords": [
+    "Service",
+    "Authentication"
+  ],
+  "bugs": {
+    "url": "https://github.com/bilgeryahov/ProEP_DockerContainerServices/issues"
+  },
+  "homepage": "https://github.com/bilgeryahov/ProEP_DockerContainerServices/issues#readme",
+  "dependencies": {
+    "mocha": "^3.5.3"
+  },
+  "author": "CodeNinjas",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
+    "eslint": "^4.9.0",
+    "eslint-config-airbnb-base": "^12.0.2",
+    "eslint-plugin-import": "^2.7.0"
+  }
+}
