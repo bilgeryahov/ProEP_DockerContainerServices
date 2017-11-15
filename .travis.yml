@@ -15,3 +15,6 @@ after_success:
   - gem install net-scp
   - gem install net-ssh
   - ruby deploy.rb
+branches:
+  only:
+  - master
