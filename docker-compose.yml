@@ -30,3 +30,7 @@ services:
      - POSTGRES_DB=show_me_db
      - POSTGRES_USER=postgres
      - POSTGRES_PASSWORD=showme
+  payment:
+      build: payment
+      ports:
+       - "1996:1996"
