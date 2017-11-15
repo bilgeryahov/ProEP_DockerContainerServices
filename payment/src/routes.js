@@ -19,8 +19,9 @@ const express = require('express');
 const router = express.Router();
 
 // Constants.
-const RETURN_URL = `http://40.68.124.79:9000/success`;
-const CANCEL_URL = `http://40.68.124.79:9000/cancel`;
+const PORT = 1996;
+const RETURN_URL = `http://40.68.124.79:${PORT}/success`;
+const CANCEL_URL = `http://40.68.124.79:${PORT}/cancel`;
 
 paypal.configure({
 	'mode': config.environment,
