@@ -9,6 +9,8 @@
  * @copyright © 2017 Code Ninjas, all rights reserved.
  */
 
+/* eslint-env node, mocha */
+
 // Dependencies.
 const expect = require('chai').expect; // eslint-disable-line
 
