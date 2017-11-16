@@ -20,13 +20,13 @@ const beverages = {
   tea: ['chai', 'matcha', 'oolong'],
 };
 
-describe('#payment: ', function () {
-	it('tries an example test.', function (done) {
-		expect(foo).to.be.a('string');
-		expect(foo).to.equal('bar');
-		expect(foo).to.have.lengthOf(3);
-		expect(beverages).to.have.property('tea').with.lengthOf(3);
+describe('#payment: ', () => {
+  it('tries an example test.', (done) => {
+    expect(foo).to.be.a('string');
+    expect(foo).to.equal('bar');
+    expect(foo).to.have.lengthOf(3);
+    expect(beverages).to.have.property('tea').with.lengthOf(3);
 
-		return done();
-	});
+    return done();
+  });
 });
