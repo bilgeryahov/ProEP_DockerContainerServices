@@ -51,6 +51,7 @@ services:
         - "5672:5672"
         - "15672:15672"
   integrationtest:
-      build: integrationtest
-      links:
-        - webfacade
+    build: integrationtest
+    links:
+      - webfacade
+      - phonefacade

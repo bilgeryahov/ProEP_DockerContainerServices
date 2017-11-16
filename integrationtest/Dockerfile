@@ -10,5 +10,4 @@ RUN cd /src; npm install
 # Bundle app source
 COPY . /src
 
-EXPOSE  9000
-# CMD ["/src/node_modules/.bin/babel-node", "/src/server.js"]
+CMD ["top"]

@@ -20,7 +20,8 @@
   },
   "homepage": "https://github.com/bilgeryahov/ProEP_DockerContainerServices/issues#readme",
   "dependencies": {
-    "mocha": "^3.5.3"
+    "mocha": "^3.5.3",
+    "socket.io-client": "~2.0.4"
   },
   "author": "CodeNinjas",
   "license": "ISC",
