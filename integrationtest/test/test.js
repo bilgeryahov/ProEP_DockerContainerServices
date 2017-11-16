@@ -33,7 +33,7 @@ describe('Socketclient', () => {
       // send location
       clientPhone.emit('phonemeta', locdata);
       return new Promise((resolve) => { // wait for reply
-        clientWeb.once('register', resolve);
+        clientWeb.once('phonemeta', resolve);
       })
         .then((data) => {
           if (data.location.long === locdata.location.long

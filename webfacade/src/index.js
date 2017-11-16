@@ -1,9 +1,18 @@
 import { GraphQLClient } from 'graphql-request';
 
 const client = new GraphQLClient('http://authentication:9000/graphql', { headers: {} });
+const amqp = require('amqp');
+
+// RabbitMQ stuff
+const connection = amqp.createConnection({ host: 'amqp://user:user@rabbit:5672' });
+
+// Join a queue
+const queuePromise = new Promise(resolve => connection.on('ready', resolve))
+  .then(() => new Promise(resolve => connection.queue('phonemeta', resolve)));
 
 export const newConnection = (socket) => {
   console.log('New connection');
+  socket.join('singleroom'); // refactor later to work on multiple streams
   let userId = null;
 
   socket.on('login', (msg) => {
@@ -46,4 +55,8 @@ export const newConnection = (socket) => {
   });
 };
 
-export const superSecret = 'abc';
+export const rabbitToSocket = (io) => {
+  queuePromise.then((queue) => { // queue is loaded
+    queue.subscribe(message => io.sockets.in('singleroom').emit('phonemeta', message)); // pass the event to socket
+  });
+};
