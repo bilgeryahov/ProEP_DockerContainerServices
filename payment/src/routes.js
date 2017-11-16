@@ -14,7 +14,6 @@
 const paypal = require('paypal-rest-sdk');
 const config = require('./../config.json');
 const express = require('express');
-
 const router = express.Router();
 
 // Constants.
@@ -75,7 +74,7 @@ router
   .route('/success')
   .get((req, res) => {
     const payerID = req.query.PayerID;
-    const { paymentId } = req.query.paymentId;
+    const paymentId = req.query.paymentId;
 
     const EXECUTE_PAYMENT_JSON = {
       payer_id: payerID,
