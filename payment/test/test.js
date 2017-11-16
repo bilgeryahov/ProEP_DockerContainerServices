@@ -2,6 +2,7 @@
  * @file test.js
  *
  * Tests for the Payment Service.
+ * TODO: Write proper tests.
  *
  * @author Bilger Yahov <bayahov1@gmail.com>
  * @version 1.0.0
@@ -17,7 +18,13 @@ const beverages = {
   tea: ['chai', 'matcha', 'oolong'],
 };
 
-expect(foo).to.be.a('string');
-expect(foo).to.equal('bar');
-expect(foo).to.have.lengthOf(3);
-expect(beverages).to.have.property('tea').with.lengthOf(3);
+describe('#payment: ', function () {
+	it('tries an example test.', function (done) {
+		expect(foo).to.be.a('string');
+		expect(foo).to.equal('bar');
+		expect(foo).to.have.lengthOf(3);
+		expect(beverages).to.have.property('tea').with.lengthOf(3);
+
+		return done();
+	});
+});
