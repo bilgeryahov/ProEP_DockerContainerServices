@@ -57,6 +57,6 @@ export const newConnection = (socket) => {
 
 export const rabbitToSocket = (io) => {
   queuePromise.then((queue) => { // queue is loaded
-    queue.subscribe(message => io.sockets.in('singleroom').emit('phonemeta', message)); // pass the event to socket
+    queue.subscribe(message => io.sockets.in('singleroom').emit('phonemeta', JSON.parse(message))); // pass the event to socket
   });
 };

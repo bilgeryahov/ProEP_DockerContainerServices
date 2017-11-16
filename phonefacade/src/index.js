@@ -1,6 +1,7 @@
 import { GraphQLClient } from 'graphql-request';
 
 const client = new GraphQLClient('http://authentication:9000/graphql', { headers: {} });
+const streamClient = new GraphQLClient('http://stream:1950/graphql', { headers: {} });
 
 export const newConnection = (socket) => {
   console.log('New connection');
@@ -44,6 +45,10 @@ export const newConnection = (socket) => {
       socket.emit('register', { succeed: false, message: 'Give both username, email and password' });
     }
   });
+
+  socket.on('phonemeta', msg =>
+    streamClient.request('query sendPhoneMeta($data: String!) { user(data: $data) }', { data: JSON.stringify(msg) }))
+    .catch(err => console.err(err));
 };
 
 export const superSecret = 'abc';

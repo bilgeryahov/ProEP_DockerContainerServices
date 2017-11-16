@@ -24,7 +24,7 @@ export const root =
 {
   hello: () => 'Hello world from stream!',
   sendPhoneMeta: (data) => {
-    connection.publish('phonemeta', JSON.stringify(data));
+    connection.publish('phonemeta', data);
     return true;
   },
 };
