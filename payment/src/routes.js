@@ -14,6 +14,7 @@
 const paypal = require('paypal-rest-sdk');
 const config = require('./../config.json');
 const express = require('express');
+
 const router = express.Router();
 
 // Constants.
@@ -73,8 +74,8 @@ router
 router
   .route('/success')
   .get((req, res) => {
-    const payerID = req.query.PayerID;
-    const paymentId = req.query.paymentId;
+    const payerID = req.query.PayerID; // eslint-disable-line
+    const paymentId = req.query.paymentId; // eslint-disable-line
 
     const EXECUTE_PAYMENT_JSON = {
       payer_id: payerID,
