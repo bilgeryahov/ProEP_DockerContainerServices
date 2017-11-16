@@ -55,3 +55,9 @@ services:
     links:
       - webfacade
       - phonefacade
+  stream:
+    build: stream
+    links:
+     - rabbit
+    ports:
+     - "1950:1950"
