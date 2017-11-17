@@ -7,9 +7,8 @@ RUN apk add --update nodejs-npm
 COPY package.json /src/package.json
 RUN cd /src; npm install
 
-
 # Bundle app source
 COPY . /src
 
-EXPOSE  1984
-CMD ["./src/wait-for-it.sh", "postgresql:5432", "--", "/src/node_modules/.bin/babel-node", "/src/server.js"]
+EXPOSE  1903
+CMD ["/src/node_modules/.bin/babel-node", "/src/server.js"]
