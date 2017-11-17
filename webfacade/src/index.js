@@ -65,9 +65,9 @@ export const rabbitToSocket = (io) => {
     console.log(io);
     console.log(queue);
     queue.subscribe((message) => {
-      console.log(`broadcast ${JSON.stringify(message)}`);
+      // console.log(`broadcast ${JSON.stringify(message)}`);
       io.sockets.in('singleroom').emit('phonemeta', message);
-      console.log('send');
+      // console.log('send');
     }); // pass the event to socket
   })
     .catch(err => console.error(err));
