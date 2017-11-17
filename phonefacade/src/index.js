@@ -47,8 +47,9 @@ export const newConnection = (socket) => {
   });
 
   socket.on('phonemeta', msg =>
-    streamClient.request('query sendPhoneMeta($data: String!) { user(data: $data) }', { data: JSON.stringify(msg) })
-      .catch(err => console.err(err)));
+    streamClient.request('query sendPhoneMeta($data: String!) { sendPhoneMeta(data: $data) }', { data: JSON.stringify(msg) })
+      .then(() => console.log(`send message ${JSON.stringify(msg)}`))
+      .catch(err => console.error(err)));
 };
 
 export const superSecret = 'abc';

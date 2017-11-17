@@ -8,7 +8,11 @@ const connection = amqp.createConnection({ host: 'amqp://user:user@rabbit:5672' 
 
 // Join a queue
 const queuePromise = new Promise(resolve => connection.on('ready', resolve))
-  .then(() => new Promise(resolve => connection.queue('phonemeta', resolve)));
+  .then(() => new Promise(resolve => connection.queue('phonemeta', resolve)))
+  .catch((err) => {
+    console.error(err);
+    process.exit(1); // If can't connect, restart the server
+  });
 
 export const newConnection = (socket) => {
   console.log('New connection');
@@ -57,6 +61,14 @@ export const newConnection = (socket) => {
 
 export const rabbitToSocket = (io) => {
   queuePromise.then((queue) => { // queue is loaded
-    queue.subscribe(message => io.sockets.in('singleroom').emit('phonemeta', JSON.parse(message))); // pass the event to socket
-  });
+    console.log('Connected to rabbitmq');
+    console.log(io);
+    console.log(queue);
+    queue.subscribe((message) => {
+      console.log(`broadcast ${JSON.stringify(message)}`);
+      io.sockets.in('singleroom').emit('phonemeta', message);
+      console.log('send');
+    }); // pass the event to socket
+  })
+    .catch(err => console.error(err));
 };

@@ -11,7 +11,12 @@ connection.on('error', (e) => {
 
 // Join a queue
 new Promise(resolve => connection.on('ready', resolve))
-  .then(() => new Promise(resolve => connection.queue('phonemeta', resolve)));
+  .then(() => new Promise(resolve => connection.queue('phonemeta', resolve)))
+  .then(() => console.log('Connected to rabbitmq'))
+  .catch((err) => {
+    console.error(err);
+    process.exit(1); // If can't connect, restart the server
+  });
 
 export const schema = buildSchema(`
 type Query {
@@ -24,7 +29,8 @@ export const root =
 {
   hello: () => 'Hello world from stream!',
   sendPhoneMeta: (data) => {
-    connection.publish('phonemeta', data);
+    console.log(`publish ${JSON.stringify(data)}`);
+    connection.publish('phonemeta', JSON.parse(data.data));
     return true;
   },
 };

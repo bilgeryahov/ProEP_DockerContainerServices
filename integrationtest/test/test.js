@@ -36,6 +36,7 @@ describe('Socketclient', () => {
         clientWeb.once('phonemeta', resolve);
       })
         .then((data) => {
+          console.log(`Got ${JSON.stringify(data)}`);
           if (data.location.long === locdata.location.long
             && data.location.long === locdata.location.long) {
             return Promise.resolve();

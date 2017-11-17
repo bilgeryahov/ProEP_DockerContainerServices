@@ -8,12 +8,14 @@ services:
      - "9000:9000"
   webfacade:
     build: webfacade
+    restart: always
     links:
      - authentication
     ports:
      - "9090:9090"
   phonefacade:
     build: phonefacade
+    restart: always
     links:
      - authentication
     ports:
@@ -57,6 +59,7 @@ services:
       - phonefacade
   stream:
     build: stream
+    restart: always
     links:
      - rabbit
     ports:
