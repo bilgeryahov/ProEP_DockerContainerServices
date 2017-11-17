@@ -20,7 +20,7 @@ describe('Graphql', () => {
       .then(() =>
         model.User.destroy({ // Remove testdata before running
           where: {
-            $or: [{ username: 'testuser' }, { username: 'george' }, { username: 'steve' }],
+            $or: [{ username: 'testuser' }, { username: 'george' }, { username: 'steve' }, { username: 'georgesoroz' }],
           },
         }))
       .catch((err) => {

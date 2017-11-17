@@ -1,10 +1,10 @@
 {
-  "name": "webfacade",
+  "name": "authentication",
   "version": "1.0.0",
-  "description": "Web Facade Service by Fontys students.",
+  "description": "Authentication Service by Fontys students.",
   "main": "server.js",
   "scripts": {
-    "test": "./node_modules/.bin/eslint . && mocha --compilers js:babel-core/register --timeout 15000",
+    "test": "./node_modules/.bin/eslint . && mocha --compilers js:babel-core/register",
     "start": "./node_modules/.bin/babel-node server.js"
   },
   "repository": {
@@ -13,21 +13,15 @@
   },
   "keywords": [
     "Service",
-    "Web",
-    "Facade"
+    "Authentication"
   ],
   "bugs": {
     "url": "https://github.com/bilgeryahov/ProEP_DockerContainerServices/issues"
   },
   "homepage": "https://github.com/bilgeryahov/ProEP_DockerContainerServices/issues#readme",
   "dependencies": {
-    "express": "^4.15.5",
     "mocha": "^3.5.3",
-    "redis": "^2.8.0",
-    "socket.io-client": "^2.0.3",
-    "socket.io": "^2.0.3",
-    "graphql-request": "^1.4.0",
-    "amqp":"^0.2.6"
+    "socket.io-client": "~2.0.4"
   },
   "author": "CodeNinjas",
   "license": "ISC",

@@ -1,22 +1,10 @@
 import { GraphQLClient } from 'graphql-request';
 
 const client = new GraphQLClient('http://authentication:9000/graphql', { headers: {} });
-const amqp = require('amqp');
-
-// RabbitMQ stuff
-const connection = amqp.createConnection({ host: 'amqp://user:user@rabbit:5672' });
-
-// Join a queue
-const queuePromise = new Promise(resolve => connection.on('ready', resolve))
-  .then(() => new Promise(resolve => connection.queue('phonemeta', resolve)))
-  .catch((err) => {
-    console.error(err);
-    process.exit(1); // If can't connect, restart the server
-  });
+const streamClient = new GraphQLClient('http://stream:1950/graphql', { headers: {} });
 
 export const newConnection = (socket) => {
   console.log('New connection');
-  socket.join('singleroom'); // refactor later to work on multiple streams
   let userId = null;
 
   socket.on('login', (msg) => {
@@ -57,18 +45,11 @@ export const newConnection = (socket) => {
       socket.emit('register', { succeed: false, message: 'Give both username, email and password' });
     }
   });
+
+  socket.on('phonemeta', msg =>
+    streamClient.request('query sendPhoneMeta($data: String!) { sendPhoneMeta(data: $data) }', { data: JSON.stringify(msg) })
+      // .then(() => console.log(`send message ${JSON.stringify(msg)}`))
+      .catch(err => console.error(err)));
 };
 
-export const rabbitToSocket = (io) => {
-  queuePromise.then((queue) => { // queue is loaded
-    console.log('Connected to rabbitmq');
-    console.log(io);
-    console.log(queue);
-    queue.subscribe((message) => {
-      // console.log(`broadcast ${JSON.stringify(message)}`);
-      io.sockets.in('singleroom').emit('phonemeta', message);
-      // console.log('send');
-    }); // pass the event to socket
-  })
-    .catch(err => console.error(err));
-};
+export const superSecret = 'abc';
