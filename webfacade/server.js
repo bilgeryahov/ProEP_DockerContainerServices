@@ -1,4 +1,4 @@
-import { newConnection, rabbitToSocket } from './src';
+import { newConnection } from './src';
 
 const app = require('express')();
 const http = require('http').Server(app);
@@ -13,7 +13,6 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', newConnection);
-rabbitToSocket(io);
 
 http.listen(PORT, () => {
   console.log(`Running on http://localhost:${PORT}`);

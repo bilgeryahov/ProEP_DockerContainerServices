@@ -8,18 +8,10 @@ services:
      - "9000:9000"
   webfacade:
     build: webfacade
-    restart: always
     links:
      - authentication
     ports:
      - "9090:9090"
-  phonefacade:
-    build: phonefacade
-    restart: always
-    links:
-     - authentication
-    ports:
-     - "1903:1903"
   streamtranscoder:
     build: streamtranscoder
     ports:
@@ -42,25 +34,3 @@ services:
       build: payment
       ports:
        - "1996:1996"
-  rabbit:
-     container_name: dev_rabbit
-     hostname: rabbit
-     image: rabbitmq:3.6.6-management
-     environment:
-        - RABBITMQ_DEFAULT_USER = user
-        - RABBITMQ_DEFAULT_PASS = user
-     ports:
-        - "5672:5672"
-        - "15672:15672"
-  integrationtest:
-    build: integrationtest
-    links:
-      - webfacade
-      - phonefacade
-  stream:
-    build: stream
-    restart: always
-    links:
-     - rabbit
-    ports:
-     - "1950:1950"

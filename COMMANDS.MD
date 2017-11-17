@@ -21,5 +21,3 @@ docker-compose build && docker-compose up -d && docker exec -t proepdockercontai
 ./node_modules/.bin/eslint . --fix
 # GraphQl endpoint
 0.0.0.0:1984/graphql
-# Testing:
-docker-compose build && docker-compose up
