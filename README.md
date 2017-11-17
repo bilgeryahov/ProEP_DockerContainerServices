@@ -7,3 +7,6 @@ Only need docker
 # Run
 Just use command:
 `docker-compose build && docker-compose up`
+
+# RabbitMQ
+Go to 0.0.0.0:15672 with username and password `guest` `guest`
