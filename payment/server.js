@@ -23,6 +23,5 @@ app.use((req, res, next) => {
 app.use('/', routes);
 
 const server = app.listen(app.get('port'), () => {
-  const port = server.address().port; // eslint-disable-line
-  console.log('Info: Server listening on port: ', port);
+  console.log('Info: Server listening on port: ', app.get('port'));
 });
