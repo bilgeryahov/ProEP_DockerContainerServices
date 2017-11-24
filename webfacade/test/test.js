@@ -44,6 +44,7 @@ describe('Socketclient', () => {
         })
         .then((data) => {
           if (!data.succeed) {
+            console.log(data);
             return Promise.reject(Error('login failed'));
           }
           return Promise.resolve();
