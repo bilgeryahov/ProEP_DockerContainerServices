@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
     subscribed: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
-    }
+    },
   });
 
   return User;
