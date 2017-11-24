@@ -28,7 +28,7 @@ export const newConnection = (socket) => {
             socket.emit('login', { succeed: false, message: 'Already logged in' });
           } else if (x.user != null && Number.isInteger(x.user.id)) {
             userId = x.user.id;
-            socket.emit('login', { succeed: true, message: '' });
+            socket.emit('login', { succeed: true, message: '', userData: x.user });
           } else {
             socket.emit('login', { succeed: false, message: 'Wrong username or password' });
           }
