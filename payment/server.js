@@ -15,14 +15,13 @@ const routes = require('./src/routes');
 const PORT = 1996;
 
 const app = express();
-app.set('port', PORT);
+
 app.use((req, res, next) => {
   console.log(req.method, req.url);
   next();
 });
 app.use('/', routes);
 
-const server = app.listen(app.get('port'), () => {
-  const port = server.address().port; // eslint-disable-line
-  console.log('Info: Server listening on port: ', port);
+const server = app.listen(PORT, () => {
+  console.log('Info: Server listening on port: ', PORT);
 });
