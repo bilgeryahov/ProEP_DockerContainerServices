@@ -15,7 +15,7 @@ type Query {
 type User {
   id: Int!
   email: String!
-  subscribed: Boolean!
+  subscribed: Int!
 }
 
 type Result {
@@ -38,7 +38,7 @@ export const root =
     models.User.count({ where: { $or: [{ username: name }, { email }] } })
       .then((count) => {
         if (count === 0) {
-          models.User.create({ username: name, email, password: pass });
+          models.User.create({ username: name, email, password: pass, subscribed: 0 });
           return ({ succeed: true, message: '' });
         }
         return ({ succeed: false, message: 'Name or email already exists' });

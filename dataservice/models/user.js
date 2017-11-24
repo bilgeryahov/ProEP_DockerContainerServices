@@ -5,10 +5,7 @@ module.exports = (sequelize, DataTypes) => {
     username: DataTypes.STRING,
     password: DataTypes.STRING,
     email: DataTypes.STRING,
-    subscribed: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
+    subscribed: DataTypes.INTEGER,
   });
 
   return User;
