@@ -39,10 +39,10 @@ export const root =
       .then((count) => {
         if (count === 0) {
           models.User.create({
-              username: name,
-              email: email,
-              password: pass,
-              subscribed: 0
+            username: name,
+            email,
+            password: pass,
+            subscribed: 0,
           });
           return ({ succeed: true, message: '' });
         }
