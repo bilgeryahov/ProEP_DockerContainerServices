@@ -15,7 +15,6 @@ type Query {
 type User {
   id: Int!
   email: String!
-  subscribed: Int!
 }
 
 type Result {
@@ -28,7 +27,7 @@ export const root =
 {
   hello: () => 'Hello world!',
   user: ({ name, pass }) => models.User.findOne({
-    attributes: ['id', 'email', 'subscribed'],
+    attributes: ['id', 'email'],
     where: {
       username: name,
       password: pass,
