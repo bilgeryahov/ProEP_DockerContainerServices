@@ -22,6 +22,6 @@ app.use((req, res, next) => {
 });
 app.use('/', routes);
 
-const server = app.listen(PORT, () => {
+app.listen(PORT, () => {
   console.log('Info: Server listening on port: ', PORT);
 });
