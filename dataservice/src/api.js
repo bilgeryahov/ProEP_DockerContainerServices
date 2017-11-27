@@ -10,6 +10,8 @@ type Query {
   hello: String
   user(name: String!, pass: String!): User
   registerUser(name: String!, email: String!, pass: String!): Result
+  checkSubscribed(name: String!): Int!
+  subscribeUser(name: String!): Result
 }
 
 type User {
@@ -48,6 +50,24 @@ export const root =
         }
         return ({ succeed: false, message: 'Name or email already exists' });
       }),
+  checkSubscribed: ({ name }) => models.User.findOne({
+    attributes: ['subscribed'],
+    where: {
+      username: name,
+    },
+  }).then(x => x.subscribed),
+  subscribeUser: ({ name }) => models.User.findOne({
+    attributes: ['subscribed'],
+    where: {
+      username: name,
+    },
+  }).then((user) => {
+    if (user) {
+      return user.updateAttributes({ subscribed: 1 })
+        .then(() => ({ succeed: true, message: 'User subscribed' }));
+    }
+    return { succeed: false, message: 'Cant find user' };
+  }),
 };
 
 export const authDb = () => models.sequelize.authenticate();

@@ -29,6 +29,8 @@ services:
     build: dataservice
     links:
      - postgresql
+    ports:
+     - "2000:1984"
   postgresql:
     image: "postgres:alpine"
     restart: always
@@ -42,6 +44,7 @@ services:
       build: payment
       ports:
        - "1996:1996"
+       - "1997:1997"
   rabbit:
      container_name: dev_rabbit
      hostname: rabbit
