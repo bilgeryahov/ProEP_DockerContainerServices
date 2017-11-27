@@ -44,6 +44,7 @@ services:
       build: payment
       ports:
        - "1996:1996"
+       - "1997:1997"
   rabbit:
      container_name: dev_rabbit
      hostname: rabbit
