@@ -30,7 +30,7 @@ services:
     links:
      - postgresql
     ports:
-     - "1984:2000"
+     - "2000:1984"
   postgresql:
     image: "postgres:alpine"
     restart: always

@@ -10,7 +10,7 @@ type Query {
   hello: String
   user(name: String!, pass: String!): User
   registerUser(name: String!, email: String!, pass: String!): Result
-  checkSubscribed(name: String!): Result
+  checkSubscribed(name: String!): Int!
   subscribeUser(name: String!): Result
 }
 
@@ -55,7 +55,7 @@ export const root =
     where: {
       username: name,
     },
-  }),
+  }).then(x => x.subscribed),
   subscribeUser: ({ name }) => models.User.findOne({
     attributes: ['subscribed'],
     where: {
@@ -64,9 +64,9 @@ export const root =
   }).then((user) => {
     if (user) {
       return user.updateAttributes({ subscribed: 1 })
-        .then(() => Promise.resolve({ succeed: true, message: 'User subscribed' }));
+        .then(() => ({ succeed: true, message: 'User subscribed' }));
     }
-    return Promise.resolve({ succeed: false, message: 'Cant find user' });
+    return { succeed: false, message: 'Cant find user' };
   }),
 };
 
