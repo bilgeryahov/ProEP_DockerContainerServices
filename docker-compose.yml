@@ -64,3 +64,6 @@ services:
      - rabbit
     ports:
      - "1950:1950"
+  redis:
+    image: "redis:alpine"
+    restart: always
