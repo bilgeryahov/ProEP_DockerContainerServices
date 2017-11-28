@@ -3,7 +3,7 @@ import { graphql } from 'graphql';
 
 import { schema, root } from './../src/api';
 
-// const assert = require('assert');
+const assert = require('assert');
 
 describe('stream service', () => {
   describe('initStream', () => {
@@ -18,11 +18,22 @@ describe('stream service', () => {
             }
           })));
 
-    it('should initialize stream', () =>
+    it('should initialize stream and show list of all streamers', () =>
       graphql(schema, '{ initStream (username: "testuser") }', root)
         .then((response) => {
           console.log('Response: ', response);
-          // assert.ok(typeof response.data.initStream === 'string');
+          const uuid = response.data.initStream;
+          assert.ok(typeof uuid === 'string');
+          return graphql(schema, '{ getStreamers }', root)
+            .then((result) => {
+              console.log(result);
+
+              return Promise.resolve({ uuid, result });
+            });
+        })
+        .then(({ uuid, result }) => {
+          console.log(result);
+          assert.deepEqual(result.data.getStreamers, [{ uuid, username: 'testuser' }]);
         }));
   });
 });
