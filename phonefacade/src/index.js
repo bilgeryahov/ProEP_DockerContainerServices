@@ -10,13 +10,13 @@ export const newConnection = (socket) => {
   socket.on('login', (msg) => {
     console.log(`Login: ${JSON.stringify(msg)}`);
     if ('name' in msg && 'pass' in msg) {
-      client.request('query login($name: String!, $pass: String!) { user(name: $name, pass: $pass) { id } }', msg)
+      client.request('query login($name: String!, $pass: String!) { user(name: $name, pass: $pass) { id subscribed } }', msg)
         .then((x) => {
           if (userId != null) {
             socket.emit('login', { succeed: false, message: 'Already logged in' });
           } else if (x.user != null && Number.isInteger(x.user.id)) {
             userId = x.user.id;
-            socket.emit('login', { succeed: true, message: '' });
+            socket.emit('login', { succeed: true, message: '', userData: x.user });
           } else {
             socket.emit('login', { succeed: false, message: 'Wrong username or password' });
           }

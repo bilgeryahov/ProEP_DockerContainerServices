@@ -1,9 +1,8 @@
 /**
- * @file routes.js
+ * @file routes_private.js
  *
- * Express Routes and actions of the Payment Service.
- *
- * TODO: Fix description.
+ * Private routes which will be accessed directly
+ * from the Web-Facade service.
  *
  * @author Bilger Yahov <bayahov1@gmail.com>
  * @version 1.0.0
@@ -18,7 +17,7 @@ const express = require('express');
 const router = express.Router();
 
 // Constants.
-const PORT = 1996;
+const PORT = 1996; // Publicly accessible one for the redirects.
 const RETURN_URL = `http://40.68.124.79:${PORT}/success`;
 const CANCEL_URL = `http://40.68.124.79:${PORT}/cancel`;
 
@@ -69,39 +68,6 @@ router
         }
       }
     });
-  });
-
-router
-  .route('/success')
-  .get((req, res) => {
-    const payerID = req.query.PayerID; // eslint-disable-line
-    const paymentId = req.query.paymentId; // eslint-disable-line
-
-    const EXECUTE_PAYMENT_JSON = {
-      payer_id: payerID,
-      transactions: [{
-        amount: {
-          currency: 'EUR',
-          total: '2.00',
-        },
-      }],
-    };
-
-    paypal.payment.execute(paymentId, EXECUTE_PAYMENT_JSON, (error, payment) => {
-      if (error) {
-        console.log(error.response);
-        throw error;
-      } else {
-        console.log(JSON.stringify(payment));
-        res.send('Success');
-      }
-    });
-  });
-
-router
-  .route('/cancel')
-  .get((req, res) => {
-    res.send('Cancelled');
   });
 
 module.exports = router;

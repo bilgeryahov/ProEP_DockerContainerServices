@@ -91,5 +91,8 @@ describe('Graphql', () => {
       graphql(schema, '{ user(name: "testuser", pass: "testwrongpassword") { id } }', root).then((response) => {
         assert.ok(response.data.user == null);
       }));
+
+    it('Will check if a user is subscribed', () =>
+      graphql(schema, '{  }'))
   });
 });

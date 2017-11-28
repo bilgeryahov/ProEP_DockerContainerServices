@@ -11,4 +11,6 @@ RUN cd /src; npm install
 COPY . /src
 
 EXPOSE  1996
+EXPOSE  1997
+
 CMD ["/src/node_modules/.bin/babel-node", "/src/server.js"]

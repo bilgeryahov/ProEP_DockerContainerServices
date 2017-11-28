@@ -1,27 +1,26 @@
 /**
  * @file server.js
  *
- * Express Server setup for the Payment Service.
+ * Express Servers setup for the Payment Service.
  *
  * @author Bilger Yahov <bayahov1@gmail.com>
- * @version 1.0.0
+ * @version 2.0.0
  * @copyright © 2017 Code Ninjas, all rights reserved.
  */
 
 const express = require('express');
-const routes = require('./src/routes');
+const routesPublic = require('./src/routes_public');
+const routesPrivate = require('./src/routes_private');
 
 // Constants
-const PORT = 1996;
+const PORT_PUBLIC = 1996;
+const PORT_PRIVATE = 1997;
 
-const app = express();
+const appPublic = express();
+const appPrivate = express();
 
-app.use((req, res, next) => {
-  console.log(req.method, req.url);
-  next();
-});
-app.use('/', routes);
+appPublic.use('/', routesPublic);
+appPrivate.use('/', routesPrivate);
 
-const server = app.listen(PORT, () => {
-  console.log('Info: Server listening on port: ', PORT);
-});
+appPublic.listen(PORT_PUBLIC, () => {});
+appPrivate.listen(PORT_PRIVATE, () => {});
