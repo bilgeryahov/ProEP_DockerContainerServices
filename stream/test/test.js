@@ -24,7 +24,7 @@ describe('stream service', () => {
           console.log('Response: ', response);
           const uuid = response.data.initStream;
           assert.ok(typeof uuid === 'string');
-          return graphql(schema, '{ getStreamers }', root)
+          return graphql(schema, '{ getStreamers { uuid, username } }', root)
             .then((result) => {
               console.log(result);
 

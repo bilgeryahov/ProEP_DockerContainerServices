@@ -53,7 +53,7 @@ export const root =
       connection.publish('phonemeta', JSON.parse(data.data));
       return true;
     },
-    initStream: (username) => {
+    initStream: ({ username }) => {
       const uuid = uuidv4();
       client.hmset('streamers', { [uuid]: username });
 
