@@ -17,6 +17,8 @@ docker-compose up -d
 docker-compose ps
 # Run a single test
 docker-compose build && docker-compose up -d && docker exec -t proepdockercontainerservices_dataservice_1 /bin/sh -c "cd /src; npm test"
+# Ren a test with all containers being restarted (redis)
+docker-compose stop && docker-compose build && docker-compose up -d && docker exec -t proepdockercontainerservices_stream_1 /bin/sh -c "cd /src; npm test"
 # Fix eslint errors automaticly
 ./node_modules/.bin/eslint . --fix
 # GraphQl endpoint
