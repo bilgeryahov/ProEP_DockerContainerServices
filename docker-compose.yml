@@ -65,6 +65,7 @@ services:
     restart: always
     links:
      - rabbit
+     - redis
     ports:
      - "1950:1950"
   redis:
