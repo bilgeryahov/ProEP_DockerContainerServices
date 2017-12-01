@@ -57,6 +57,37 @@ export const newConnection = (socket) => {
       socket.emit('register', { succeed: false, message: 'Give both username, email and password' });
     }
   });
+
+  socket.on('checkSubscribed', (name) => {
+    client.request('query checkSubscribed($name: String!){ checkSubscribed (name: $name) { subscribed } }', name)
+      .then((x) => {
+        if (x !== 0) {
+          return Promise.reject(Error('Cannot subscribe! Already subbed'));
+        }
+        return rp({
+          uri: PAYMENT_URL,
+          method: 'POST',
+          resolveWithFullResponse: true,
+        });
+      })
+      .then((response) => {
+        if (response.status === 201) {
+          return client.request('query subscribeUser($name: String!){ subscribeUser (name: $name) { result } }', name);
+        }
+        return Promise.reject(Error('Cannot subscribe!'));
+      })
+      .then((response) => {
+        if (response.data.subscribeUser.succeed) {
+          socket.emit('subscribeUser', { succeed: true, message: '' });
+        } else {
+          throw (Error('Cannot subscribe! Problem with subscribing process.'));
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        socket.emit('checkSubscribed', { succeed: false, message: `Error ${err}` });
+      });
+  });
 };
 
 export const rabbitToSocket = (io) => {
