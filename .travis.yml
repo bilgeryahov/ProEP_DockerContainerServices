@@ -13,6 +13,7 @@ script:
   - docker exec -t proepdockercontainerservices_phonefacade_1 /bin/sh -c "cd /src; npm test"
   - docker exec -t proepdockercontainerservices_integrationtest_1 /bin/sh -c "cd /src; npm test"
   - docker exec -t proepdockercontainerservices_payment_1 /bin/sh -c "cd /src; npm test"
+  - docker exec -t proepdockercontainerservices_stream_1 /bin/sh -c "cd /src; npm test"
 after_success:
   - gem install net-scp
   - gem install net-ssh

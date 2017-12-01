@@ -1,13 +1,10 @@
 import { GraphQLClient } from 'graphql-request';
 
-const rp = require('request-promise');
-
 const client = new GraphQLClient('http://authentication:9000/graphql', { headers: {} });
 const amqp = require('amqp');
 
 // RabbitMQ stuff
 const connection = amqp.createConnection({ host: 'amqp://user:user@rabbit:5672' });
-const PAYMENT_URL = 'http://40.68.124.79:1997/pay';
 
 // Join a queue
 const queuePromise = new Promise(resolve => connection.on('ready', resolve))

@@ -41,10 +41,10 @@ router
     paypal.payment.execute(paymentId, EXECUTE_PAYMENT_JSON, (error, payment) => {
       if (error) {
         console.log(error.response);
-        res.status(500).json({ success: false });
+        throw error;
       } else {
         console.log(JSON.stringify(payment));
-        res.status(201).json({ success: true });
+        res.send('Success');
       }
     });
   });
@@ -52,7 +52,7 @@ router
 router
   .route('/cancel')
   .get((req, res) => {
-    res.status(500).json({ success: false });
+    res.send('Cancelled');
   });
 
 module.exports = router;
