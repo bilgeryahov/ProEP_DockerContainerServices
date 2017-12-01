@@ -65,8 +65,13 @@ services:
     restart: always
     links:
      - rabbit
+     - redis
     ports:
      - "1950:1950"
   redis:
-    image: "redis:alpine"
+    build: "redis"
     restart: always
+    ports: 
+      - "6379:6379"
+    volumes:
+     - ../dockervolumes/redis-data:/data
