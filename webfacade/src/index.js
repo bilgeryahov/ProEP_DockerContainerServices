@@ -21,7 +21,6 @@ export const newConnection = (socket) => {
   console.log('New connection');
   socket.join('singleroom'); // refactor later to work on multiple streams
   let userId = null;
-  let userName = null;
 
   socket.on('login', (msg) => {
     console.log(`Login: ${JSON.stringify(msg)}`);
@@ -32,7 +31,6 @@ export const newConnection = (socket) => {
             socket.emit('login', { succeed: false, message: 'Already logged in' });
           } else if (x.user != null && Number.isInteger(x.user.id)) {
             userId = x.user.id;
-            userName = msg.name;
             socket.emit('login', { succeed: true, message: '', userData: x.user });
           } else {
             socket.emit('login', { succeed: false, message: 'Wrong username or password' });
@@ -63,31 +61,34 @@ export const newConnection = (socket) => {
     }
   });
 
-  socket.on('subscribeUser', (name) => {
-    client.request('query subscribeUser($name: String!){ subscribeUser (name: $name) { subscribed } }', name)
+  socket.on('checkSubscribed', (name) => {
+    client.request('query checkSubscribed($name: String!){ checkSubscribed (name: $name) { subscribed } }', name)
       .then((x) => {
         if (x !== 0) {
-          socket.emit('subscribeUser', { succeed: false, message: 'Cannot subscribe!' });
+          return Promise.reject(Error('Cannot subscribe! Already subbed'));
+        }
+        return rp({
+          uri: PAYMENT_URL,
+          method: 'POST',
+          resolveWithFullResponse: true,
+        });
+      })
+      .then((response) => {
+        if (response.status === 201) {
+          return client.request('query subscribeUser($name: String!){ subscribeUser (name: $name) { result } }', name);
+        }
+        return Promise.reject(Error('Cannot subscribe!'));
+      })
+      .then((response) => {
+        if (response.data.subscribeUser.succeed) {
+          socket.emit('subscribeUser', { succeed: true, message: '' });
         } else {
-          rp({
-            uri: PAYMENT_URL,
-            method: 'POST',
-            resolveWithFullResponse: true,
-          }).then((response) => {
-            if (response.status === 201) {
-              // Subscribe user.
-            } else {
-              socket.emit('subscribeUser', { succeed: false, message: 'Cannot subscribe!' });
-            }
-          })
-            .catch((err) => {
-              socket.emit('subscribeUser', { succeed: false, message: `Error ${err}` });
-            });
+          throw (Error('Cannot subscribe! Problem with subscribing process.'));
         }
       })
       .catch((err) => {
         console.error(err);
-        socket.emit('subscribeUser', { succeed: false, message: `Error ${err}` });
+        socket.emit('checkSubscribed', { succeed: false, message: `Error ${err}` });
       });
   });
 };
