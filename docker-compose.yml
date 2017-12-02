@@ -11,6 +11,7 @@ services:
     restart: always
     links:
      - authentication
+     - stream
     ports:
      - "9090:9090"
   phonefacade:
@@ -18,6 +19,7 @@ services:
     restart: always
     links:
      - authentication
+     - stream
     ports:
      - "1903:1903"
   streamtranscoder:
