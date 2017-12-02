@@ -31,8 +31,8 @@ describe('Socketclient', () => {
       const loginPromise = new Promise((resolve) => {
         client.once('login', resolve);
       });
-      const subscribePromise = new Promise((resolve) => {
-        client.once('subscribe', resolve);
+      const checkSubscribedPromise = new Promise((resolve) => {
+        client.once('checkSubscribed', resolve);
       });
       client.emit('register', { name: 'steve', email: 'steve@me.com', pass: 'mypass' });
       return registerPromise
@@ -51,8 +51,8 @@ describe('Socketclient', () => {
             return Promise.reject(Error('login failed'));
           }
           console.log('Logged in');
-          client.emit('subscribe');
-          return subscribePromise;
+          client.emit('checkSubscribed');
+          return checkSubscribedPromise;
         })
         .then((data) => {
           if (!data.succeed) {
