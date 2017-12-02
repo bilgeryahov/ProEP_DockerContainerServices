@@ -1,13 +1,12 @@
 import { GraphQLClient } from 'graphql-request';
-
-const rp = require('request-promise');
+import { Socket } from 'dgram';
 
 const client = new GraphQLClient('http://authentication:9000/graphql', { headers: {} });
+const clientStream = new GraphQLClient('http://stream:1950/graphql', { headers: {} });
 const amqp = require('amqp');
 
 // RabbitMQ stuff
 const connection = amqp.createConnection({ host: 'amqp://user:user@rabbit:5672' });
-const PAYMENT_URL = 'http://40.68.124.79:1997/pay';
 
 // Join a queue
 const queuePromise = new Promise(resolve => connection.on('ready', resolve))
@@ -61,34 +60,14 @@ export const newConnection = (socket) => {
     }
   });
 
-  socket.on('checkSubscribed', (name) => {
-    client.request('query checkSubscribed($name: String!){ checkSubscribed (name: $name) { subscribed } }', name)
+  socket.on('getStreamers', () => {
+    clientStream.request('{getStreamers{username,uuid}}')
       .then((x) => {
-        if (x !== 0) {
-          return Promise.reject(Error('Cannot subscribe! Already subbed'));
-        }
-        return rp({
-          uri: PAYMENT_URL,
-          method: 'POST',
-          resolveWithFullResponse: true,
-        });
-      })
-      .then((response) => {
-        if (response.status === 201) {
-          return client.request('query subscribeUser($name: String!){ subscribeUser (name: $name) { result } }', name);
-        }
-        return Promise.reject(Error('Cannot subscribe!'));
-      })
-      .then((response) => {
-        if (response.data.subscribeUser.succeed) {
-          socket.emit('subscribeUser', { succeed: true, message: '' });
-        } else {
-          throw (Error('Cannot subscribe! Problem with subscribing process.'));
-        }
+        socket.emit('getStreamers', { succeed: true, data: x.getStreamers });
       })
       .catch((err) => {
         console.error(err);
-        socket.emit('checkSubscribed', { succeed: false, message: `Error ${err}` });
+        socket.emit('getStreamers', { succeed: false, message: `Error ${err}` });
       });
   });
 };
@@ -96,8 +75,6 @@ export const newConnection = (socket) => {
 export const rabbitToSocket = (io) => {
   queuePromise.then((queue) => { // queue is loaded
     console.log('Connected to rabbitmq');
-    console.log(io);
-    console.log(queue);
     queue.subscribe((message) => {
       // console.log(`broadcast ${JSON.stringify(message)}`);
       io.sockets.in('singleroom').emit('phonemeta', message);

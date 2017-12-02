@@ -10,4 +10,4 @@ RUN cd /src; npm install
 # Bundle app source
 COPY . /src
 
-CMD ["top"]
+CMD ["cat","/dev/full"]

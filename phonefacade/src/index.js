@@ -6,6 +6,7 @@ const streamClient = new GraphQLClient('http://stream:1950/graphql', { headers: 
 export const newConnection = (socket) => {
   console.log('New connection');
   let userId = null;
+  let username = null;
 
   socket.on('login', (msg) => {
     console.log(`Login: ${JSON.stringify(msg)}`);
@@ -16,6 +17,7 @@ export const newConnection = (socket) => {
             socket.emit('login', { succeed: false, message: 'Already logged in' });
           } else if (x.user != null && Number.isInteger(x.user.id)) {
             userId = x.user.id;
+            username = msg.name;
             socket.emit('login', { succeed: true, message: '', userData: x.user });
           } else {
             socket.emit('login', { succeed: false, message: 'Wrong username or password' });
@@ -50,6 +52,16 @@ export const newConnection = (socket) => {
     streamClient.request('query sendPhoneMeta($data: String!) { sendPhoneMeta(data: $data) }', { data: JSON.stringify(msg) })
       // .then(() => console.log(`send message ${JSON.stringify(msg)}`))
       .catch(err => console.error(err)));
+  socket.on('initStream', () => {
+    streamClient.request('query initStream($data: String!) { initStream(username: $data) }', { data: username })
+      .then((x) => {
+        socket.emit('initStream', { succeed: true, data: x.initStream });
+      })
+      .catch((err) => {
+        console.error(err);
+        socket.emit('initStream', { succeed: false, message: `Error ${err}` });
+      });
+  });
 };
 
 export const superSecret = 'abc';

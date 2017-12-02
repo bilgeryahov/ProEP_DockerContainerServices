@@ -28,7 +28,8 @@
     "socket.io": "^2.0.3",
     "graphql-request": "^1.4.0",
     "amqp":"^0.2.6",
-    "request-promise": "^4.2.2"
+    "request-promise": "^4.2.2",
+    "request":"^2.83.0"
   },
   "author": "CodeNinjas",
   "license": "ISC",

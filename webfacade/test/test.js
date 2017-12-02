@@ -31,9 +31,6 @@ describe('Socketclient', () => {
       const loginPromise = new Promise((resolve) => {
         client.once('login', resolve);
       });
-      const checkSubscribedPromise = new Promise((resolve) => {
-        client.once('checkSubscribed', resolve);
-      });
       client.emit('register', { name: 'steve', email: 'steve@me.com', pass: 'mypass' });
       return registerPromise
         .then((data) => {
@@ -51,16 +48,8 @@ describe('Socketclient', () => {
             return Promise.reject(Error('login failed'));
           }
           console.log('Logged in');
-          client.emit('checkSubscribed');
-          return checkSubscribedPromise;
-        })
-        .then((data) => {
-          if (!data.succeed) {
-            return Promise.reject(Error('Subscribing failed'));
-          }
           return Promise.resolve();
-        })
-        .catch(err => Promise.reject(err));
+        });
     });
   });
 });
