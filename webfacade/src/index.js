@@ -96,8 +96,6 @@ export const newConnection = (socket) => {
 export const rabbitToSocket = (io) => {
   queuePromise.then((queue) => { // queue is loaded
     console.log('Connected to rabbitmq');
-    console.log(io);
-    console.log(queue);
     queue.subscribe((message) => {
       // console.log(`broadcast ${JSON.stringify(message)}`);
       io.sockets.in('singleroom').emit('phonemeta', message);
