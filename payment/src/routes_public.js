@@ -25,8 +25,8 @@ paypal.configure({
 router
   .route('/success')
   .get((req, res) => {
-    const payerID = req.query.PayerID; // eslint-disable-line
-    const paymentId = req.query.paymentId; // eslint-disable-line
+    const payerID = req.query.PayerID; 
+    const paymentId = req.query.paymentId; 
 
     const EXECUTE_PAYMENT_JSON = {
       payer_id: payerID,
