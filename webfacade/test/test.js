@@ -59,7 +59,8 @@ describe('Socketclient', () => {
             return Promise.reject(Error('Subscribing failed'));
           }
           return Promise.resolve();
-        });
+        })
+        .catch(err => Promise.reject(err));
     });
   });
 });
