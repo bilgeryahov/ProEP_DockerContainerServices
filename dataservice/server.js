@@ -1,4 +1,5 @@
 import {
+  initDb,
   schema,
   root,
 } from './src/api';
@@ -10,17 +11,19 @@ const graphqlHTTP = require('express-graphql');
 const PORT = 1984;
 
 // App
-const app = express();
-app.get('/', (req, res) => {
-  res.send('Test: Hello world from Data Service!');
+initDb().then(() => {
+  const app = express();
+  app.get('/', (req, res) => {
+    res.send('Test: Hello world from Data Service!');
+  });
+
+  app.use('/graphql', graphqlHTTP({
+    schema,
+    rootValue: root,
+    graphiql: true,
+  }));
+
+
+  app.listen(PORT);
 });
-
-app.use('/graphql', graphqlHTTP({
-  schema,
-  rootValue: root,
-  graphiql: true,
-}));
-
-
-app.listen(PORT);
 // console.log(`Running on http://localhost:${PORT}`);

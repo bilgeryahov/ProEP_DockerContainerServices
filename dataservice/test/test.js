@@ -3,30 +3,12 @@ import { graphql } from 'graphql';
 
 import {
   schema,
-  authDb,
-  model,
   root,
 } from './../src/api';
 
 const assert = require('assert');
 
 describe('Graphql', () => {
-  before(() =>
-    authDb()
-      .then(() => {
-        console.log('Connection worked');
-        return Promise.resolve();
-      })
-      .then(() =>
-        model.User.destroy({ // Remove testdata before running
-          where: {
-            $or: [{ username: 'testuser' }, { username: 'george' }, { username: 'steve' }, { username: 'georgesoroz' }, { username: 'asana' }],
-          },
-        }))
-      .catch((err) => {
-        console.error('Unable to connect', err);
-        return Promise.reject(Error('Initialization failed'));
-      }));
   describe('basic', () => {
     it(
       'Succeed a promise',

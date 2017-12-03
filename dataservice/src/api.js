@@ -3,7 +3,12 @@ import { buildSchema } from 'graphql';
 const models = require('../models');
 
 // Create database if it doesn't exist
-models.sequelize.sync();
+export const initDb = () => models.sequelize.sync().then(() =>
+  models.User.destroy({ // Remove testdata before running
+    where: {
+      $or: [{ username: 'testuser' }, { username: 'george' }, { username: 'steve' }, { username: 'georgesoroz' }, { username: 'asana' }],
+    },
+  }));
 
 export const schema = buildSchema(`
 type Query {
@@ -70,5 +75,3 @@ export const root =
   }),
 };
 
-export const authDb = () => models.sequelize.authenticate();
-export const model = models;
