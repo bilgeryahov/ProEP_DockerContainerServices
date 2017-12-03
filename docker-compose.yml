@@ -38,6 +38,8 @@ services:
     restart: always
     volumes:
      - ../dockervolumes/postgres-data:/var/lib/postgresql/data
+    ports:
+     - "6000:5432"
     environment:
      - POSTGRES_DB=show_me_db
      - POSTGRES_USER=postgres
