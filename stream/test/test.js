@@ -33,7 +33,7 @@ describe('stream service', () => {
         })
         .then(({ uuid, result }) => {
           console.log(result);
-          assert.deepEqual(result.data.getStreamers, [{ uuid, username: 'testuser' }]);
+          assert.ok(result.data.getStreamers.some(x => x.uuid === uuid && x.username === 'testuser'));
         }));
   });
 });
