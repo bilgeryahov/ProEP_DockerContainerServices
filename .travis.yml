@@ -8,6 +8,7 @@ before_install:
   - docker-compose up -d
 
 script:
+  - sleep 5
   - docker exec -t proepdockercontainerservices_dataservice_1 /bin/sh -c "cd /src; npm test"
   - docker exec -t proepdockercontainerservices_authentication_1 /bin/sh -c "cd /src; npm test"
   - docker exec -t proepdockercontainerservices_webfacade_1 /bin/sh -c "cd /src; npm test"
