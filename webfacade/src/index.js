@@ -1,5 +1,4 @@
 import { GraphQLClient } from 'graphql-request';
-import { Socket } from 'dgram';
 
 const client = new GraphQLClient('http://authentication:9000/graphql', { headers: {} });
 const clientStream = new GraphQLClient('http://stream:1950/graphql', { headers: {} });
