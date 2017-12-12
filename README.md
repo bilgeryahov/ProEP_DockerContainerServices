@@ -16,3 +16,6 @@ docker rm -f $(docker ps -a -q)
 
 # Delete every Docker image
 docker rmi -f $(docker images -q)
+
+# If Redis gives THP errors:
+docker run --rm --privileged -ti alpine /bin/sh -c "echo never > /sys/kernel/mm/transparent_hugepage/enabled && echo never > /sys/kernel/mm/transparent_hugepage/defrag"
