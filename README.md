@@ -10,3 +10,9 @@ Just use command:
 
 # RabbitMQ
 Go to 0.0.0.0:15672 with username and password `guest` `guest`
+
+# Cleanup docker
+docker rm -f $(docker ps -a -q)
+
+# Delete every Docker image
+docker rmi -f $(docker images -q)

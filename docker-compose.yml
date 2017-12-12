@@ -1,4 +1,4 @@
-version: '2'
+version: '2.1'
 services:
   authentication:
     build: authentication
@@ -9,9 +9,13 @@ services:
   webfacade:
     build: webfacade
     restart: always
+    depends_on:
+      rabbit:
+        condition: service_healthy
     links:
      - authentication
      - stream
+     - rabbit
     ports:
      - "9090:9090"
   phonefacade:
@@ -52,7 +56,7 @@ services:
   rabbit:
      container_name: dev_rabbit
      hostname: rabbit
-     image: rabbitmq:3.6.6-management
+     image: healthcheck/rabbitmq
      environment:
         - RABBITMQ_DEFAULT_USER = user
         - RABBITMQ_DEFAULT_PASS = user
@@ -67,15 +71,22 @@ services:
   stream:
     build: stream
     restart: always
+    depends_on:
+      rabbit:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     links:
      - rabbit
      - redis
     ports:
      - "1950:1950"
   redis:
-    build: "redis"
+    image: healthcheck/redis
     restart: always
+    command: redis-server /usr/local/etc/redis/redis.conf
     ports: 
       - "6379:6379"
     volumes:
+     - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
      - ../dockervolumes/redis-data:/data
