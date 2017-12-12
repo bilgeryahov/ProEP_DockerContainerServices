@@ -5,7 +5,7 @@ services:
 
 before_install:
   - docker-compose build
-  - docker-compose up &
+  - docker-compose up > dockerlog.txt &
 
 script:
   - ./wait-for-it.sh 127.0.0.1:6000
@@ -17,6 +17,7 @@ script:
   - docker exec -t proepdockercontainerservices_integrationtest_1 /bin/sh -c "cd /src; npm test"
   - docker exec -t proepdockercontainerservices_payment_1 /bin/sh -c "cd /src; npm test"
   - docker exec -t proepdockercontainerservices_stream_1 /bin/sh -c "cd /src; npm test"
+  - cat dockerlog.txt
 after_success:
   - gem install net-scp
   - gem install net-ssh
