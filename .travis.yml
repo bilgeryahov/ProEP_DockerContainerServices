@@ -5,7 +5,7 @@ services:
 
 before_install:
   - docker-compose build
-  - docker-compose up > dockerlog.txt &
+  - docker-compose up > dockerlog.txt 2>&1 &
 
 script:
   - ./wait-for-it.sh 127.0.0.1:6000
