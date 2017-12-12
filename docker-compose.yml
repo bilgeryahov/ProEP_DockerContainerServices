@@ -6,6 +6,11 @@ services:
      - dataservice
     ports:
      - "9000:9000"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
   webfacade:
     build: webfacade
     restart: always
@@ -18,6 +23,11 @@ services:
      - rabbit
     ports:
      - "9090:9090"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
   phonefacade:
     build: phonefacade
     restart: always
@@ -26,17 +36,32 @@ services:
      - stream
     ports:
      - "1903:1903"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
   streamtranscoder:
     build: streamtranscoder
     ports:
      - "1984:1984"
      - "1776:1776"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
   dataservice:
     build: dataservice
     links:
      - postgresql
     ports:
      - "2000:1984"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
   postgresql:
     image: "postgres:alpine"
     restart: always
@@ -48,26 +73,46 @@ services:
      - POSTGRES_DB=show_me_db
      - POSTGRES_USER=postgres
      - POSTGRES_PASSWORD=showme
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
   payment:
-      build: payment
-      ports:
-       - "1996:1996"
-       - "1997:1997"
+    build: payment
+    ports:
+      - "1996:1996"
+      - "1997:1997"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
   rabbit:
-     container_name: dev_rabbit
-     hostname: rabbit
-     image: healthcheck/rabbitmq
-     environment:
-        - RABBITMQ_DEFAULT_USER = user
-        - RABBITMQ_DEFAULT_PASS = user
-     ports:
-        - "5672:5672"
-        - "15672:15672"
+    container_name: dev_rabbit
+    hostname: rabbit
+    image: healthcheck/rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER = user
+      - RABBITMQ_DEFAULT_PASS = user
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
   integrationtest:
     build: integrationtest
     links:
       - webfacade
       - phonefacade
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
   stream:
     build: stream
     restart: always
@@ -81,6 +126,11 @@ services:
      - redis
     ports:
      - "1950:1950"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
   redis:
     image: healthcheck/redis
     restart: always
@@ -90,3 +140,8 @@ services:
     volumes:
      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
      - ../dockervolumes/redis-data:/data
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
