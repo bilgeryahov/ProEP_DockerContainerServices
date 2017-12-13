@@ -10,9 +10,13 @@
  */
 
 // Dependencies.
+import { GraphQLClient } from 'graphql-request';
+
 const paypal = require('paypal-rest-sdk');
 const config = require('./../config.json');
 const express = require('express');
+
+const client = new GraphQLClient('http://dataservice:1984/graphql', { headers: {} });
 
 const router = express.Router();
 
@@ -25,7 +29,7 @@ paypal.configure({
 router
   .route('/success')
   .get((req, res) => {
-    const { paymentId, PayerID, userid } = req.query;
+    const { paymentId, PayerID, username } = req.query;
 
     const EXECUTE_PAYMENT_JSON = {
       payer_id: PayerID,
@@ -43,7 +47,9 @@ router
         res.status(500).json({ success: false });
       } else {
         console.log(JSON.stringify(payment));
-        res.status(201).json({ success: true });
+        client.request('query subscribeUser($username: String!) { subscribeUser(name: $username) { succeed message } }', { username })
+          .then(() => res.status(201).json({ success: true }))
+          .catch(() => res.status(500).json({ success: false }));
       }
     });
   });

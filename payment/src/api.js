@@ -36,7 +36,7 @@ export const root =
         payment_method: 'paypal',
       },
       redirect_urls: {
-        return_url: `${RETURN_URL}&userid=${username}`,
+        return_url: `${RETURN_URL}&username=${username}`,
         cancel_url: CANCEL_URL,
       },
       transactions: [{
