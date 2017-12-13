@@ -2,6 +2,7 @@ import { GraphQLClient } from 'graphql-request';
 
 const client = new GraphQLClient('http://authentication:9000/graphql', { headers: {} });
 const clientStream = new GraphQLClient('http://stream:1950/graphql', { headers: {} });
+const clientPayment = new GraphQLClient('http://payment:1997/graphql', { headers: {} });
 const amqp = require('amqp');
 
 // RabbitMQ stuff
@@ -19,6 +20,7 @@ export const newConnection = (socket) => {
   console.log('New connection');
   socket.join('singleroom'); // refactor later to work on multiple streams
   let userId = null;
+  let username = null;
 
   socket.on('login', (msg) => {
     console.log(`Login: ${JSON.stringify(msg)}`);
@@ -29,6 +31,7 @@ export const newConnection = (socket) => {
             socket.emit('login', { succeed: false, message: 'Already logged in' });
           } else if (x.user != null && Number.isInteger(x.user.id)) {
             userId = x.user.id;
+            username = msg.name;
             socket.emit('login', { succeed: true, message: '', userData: x.user });
           } else {
             socket.emit('login', { succeed: false, message: 'Wrong username or password' });
@@ -67,6 +70,21 @@ export const newConnection = (socket) => {
       .catch((err) => {
         console.error(err);
         socket.emit('getStreamers', { succeed: false, message: `Error ${err}` });
+      });
+  });
+
+  socket.on('pay', () => {
+    clientPayment.request('query pay($username: String!){ pay(username: $username) { succeed message url } }', { username })
+      .then((x) => {
+        if (x.pay.succeed) {
+          socket.emit('redirect', { url: x.pay.url });
+        } else {
+          throw Error(x.pay.message);
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        socket.emit('paymentFailed', { message: `Error ${err}` });
       });
   });
 };

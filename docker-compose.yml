@@ -19,6 +19,7 @@ services:
         condition: service_healthy
     links:
      - authentication
+     - payment
      - stream
      - rabbit
     ports:
@@ -80,6 +81,8 @@ services:
         max-file: "10"
   payment:
     build: payment
+    links:
+     - dataservice
     ports:
       - "1996:1996"
       - "1997:1997"
