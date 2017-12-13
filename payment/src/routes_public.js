@@ -25,7 +25,7 @@ paypal.configure({
 router
   .route('/success')
   .get((req, res) => {
-    const { paymentId, PayerID } = req.query;
+    const { paymentId, PayerID, userid } = req.query;
 
     const EXECUTE_PAYMENT_JSON = {
       payer_id: PayerID,
