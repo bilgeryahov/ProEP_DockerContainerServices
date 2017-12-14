@@ -1,22 +1,8 @@
-/**
- * @file routes_private.js
- *
- * Private routes which will be accessed directly
- * from the Web-Facade service.
- *
- * @author Bilger Yahov <bayahov1@gmail.com>
- * @version 1.0.0
- * @copyright © 2017 Code Ninjas, all rights reserved.
- */
+import { buildSchema } from 'graphql';
 
-// Dependencies.
-const paypal = require('paypal-rest-sdk');
 const config = require('./../config.json');
-const express = require('express');
+const paypal = require('paypal-rest-sdk');
 
-const router = express.Router();
-
-// Constants.
 const PORT = 1996; // Publicly accessible one for the redirects.
 const RETURN_URL = `http://40.68.124.79:${PORT}/success`;
 const CANCEL_URL = `http://40.68.124.79:${PORT}/cancel`;
@@ -27,16 +13,30 @@ paypal.configure({
   client_secret: config.clientSecret,
 });
 
-router
-  .route('/pay')
-  .post((req, res) => {
+export const schema = buildSchema(`
+type Query {
+  hello: String
+  pay(username: String!): Result!
+}
+
+type Result {
+  succeed: Boolean!
+  message: String
+  url: String
+}
+`);
+
+export const root =
+{
+  hello: () => 'Hello world from payment!',
+  pay: ({ username }) => {
     const CREATE_PAYMENT_JSON = {
       intent: 'sale',
       payer: {
         payment_method: 'paypal',
       },
       redirect_urls: {
-        return_url: RETURN_URL,
+        return_url: `${RETURN_URL}&username=${username}`,
         cancel_url: CANCEL_URL,
       },
       transactions: [{
@@ -57,17 +57,22 @@ router
       }],
     };
 
-    paypal.payment.create(CREATE_PAYMENT_JSON, (error, payment) => {
+    return new Promise(resolve => paypal.payment.create(CREATE_PAYMENT_JSON, (error, payment) => {
       if (error) {
-        throw error;
+        resolve({
+          succeed: false,
+          message: JSON.stringify(error),
+        });
       } else {
         for (let i = 0; i < payment.links.length; i += 1) {
           if (payment.links[i].rel === 'approval_url') {
-            res.redirect(payment.links[i].href);
+            resolve({
+              succeed: true,
+              url: payment.links[i].href,
+            });
           }
         }
       }
-    });
-  });
-
-module.exports = router;
+    }));
+  },
+};

@@ -7,10 +7,14 @@
  * @version 2.0.0
  * @copyright © 2017 Code Ninjas, all rights reserved.
  */
+import {
+  schema,
+  root,
+} from './src/api';
 
 const express = require('express');
 const routesPublic = require('./src/routes_public');
-const routesPrivate = require('./src/routes_private');
+const graphqlHTTP = require('express-graphql');
 
 // Constants
 const PORT_PUBLIC = 1996;
@@ -20,7 +24,11 @@ const appPublic = express();
 const appPrivate = express();
 
 appPublic.use('/', routesPublic);
-appPrivate.use('/', routesPrivate);
+appPrivate.use('/graphql', graphqlHTTP({
+  schema,
+  rootValue: root,
+  graphiql: true,
+}));
 
 appPublic.listen(PORT_PUBLIC, () => {});
 appPrivate.listen(PORT_PRIVATE, () => {});

@@ -40,7 +40,7 @@ describe('Graphql', () => {
 
   describe('users', () => {
     it(
-      'Create a user',
+      'Create a user, subscribe user',
       () =>
         graphql(schema, '{ registerUser (name: "testuser", email: "a@a.com", pass: "testpassword") { succeed message } }', root)
           .then((response) => {
@@ -53,14 +53,36 @@ describe('Graphql', () => {
               return Promise.reject(Error('Exception happened'));
             }
             return graphql(schema, '{ registerUser (name: "testuser", email: "a@a.com", pass: "testpassword") { succeed message } }', root);
-          }).then(response =>
-            new Promise((resolve, reject) => {
-              if (!response.data.registerUser.succeed) {
-                resolve();
-              } else {
-                reject(Error('User should already be registered, user could be made again'));
+          })
+          .then((response) => {
+            if (!response.data.registerUser.succeed) {
+              return graphql(schema, '{ checkSubscribed (name: "testuser") }', root);
+            }
+            return Promise.reject(Error('User should already be registered, user could be made again'));
+          })
+          .then((response) => {
+            if (response.data.checkSubscribed === 0) {
+              return graphql(schema, '{ subscribeUser (name: "testuser") { succeed message } }', root);
+            }
+            return Promise.reject(Error('User is subscribed, should not be'));
+          })
+          .then((response) => {
+            try {
+              if (!response.data.subscribeUser.succeed) {
+                return Promise.reject(Error('Couldn\'t subscribe user'));
               }
-            })),
+              return graphql(schema, '{ checkSubscribed (name: "testuser") }', root);
+            } catch (err) {
+              console.log(response);
+              return Promise.reject(Error('Exception happened'));
+            }
+          })
+          .then((response) => {
+            if (response.data.checkSubscribed === 1) {
+              return Promise.resolve();
+            }
+            return Promise.reject(Error('Could not verify that user has been subscribed'));
+          }),
     );
 
     it('Login a user', () =>

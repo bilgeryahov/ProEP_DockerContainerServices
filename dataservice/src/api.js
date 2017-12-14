@@ -62,7 +62,7 @@ export const root =
     },
   }).then(x => x.subscribed),
   subscribeUser: ({ name }) => models.User.findOne({
-    attributes: ['subscribed'],
+    attributes: ['id', 'username', 'subscribed'],
     where: {
       username: name,
     },

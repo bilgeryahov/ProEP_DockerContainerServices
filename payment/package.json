@@ -27,7 +27,10 @@
     "chai": "^4.1.2",
     "express": "^4.15.5",
     "mocha": "^3.5.3",
-    "paypal-rest-sdk": "^1.7.1"
+    "paypal-rest-sdk": "^1.7.1",
+    "graphql": "^0.11.7",
+    "express-graphql": "^0.6.11",
+    "graphql-request":"^1.4.0"
   },
   "author": "CodeNinjas",
   "license": "ISC",
