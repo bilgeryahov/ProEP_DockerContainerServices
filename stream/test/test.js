@@ -18,7 +18,7 @@ describe('stream service', () => {
             }
           })));
 
-    it('should initialize stream and show list of all streamers', () =>
+    it('should initialize stream and show list of all streamers, and then remove the streamer', () =>
       graphql(schema, '{ initStream (username: "testuser") }', root)
         .then((response) => {
           console.log('Response: ', response);
@@ -34,6 +34,16 @@ describe('stream service', () => {
         .then(({ uuid, result }) => {
           console.log(result);
           assert.ok(result.data.getStreamers.some(x => x.uuid === uuid && x.username === 'testuser'));
+          return graphql(schema, `{ removeStream(uuid: "${uuid}") }`, root);
+        })
+        .then((result) => {
+          console.log(result);
+          // assert.ok(result.data.removeStream);
+          return graphql(schema, '{ getStreamers { uuid, username } }', root);
+        })
+        .then((result) => {
+          console.log(result);
+          assert.ok(!result.data.getStreamers.some(x => x.username === 'testuser'));
         }));
   });
 });

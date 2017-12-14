@@ -36,6 +36,7 @@ type Query {
   hello: String
   sendPhoneMeta(data: String!): Boolean!
   initStream(username: String!): String!
+  removeStream(uuid: String!): Boolean!
   getStreamers: [Streamer]!
 }
 
@@ -56,8 +57,11 @@ export const root =
     initStream: ({ username }) => {
       const uuid = uuidv4();
       client.hmset('streamers', { [uuid]: username });
-
       return uuid;
+    },
+    removeStream: ({ uuid }) => {
+      client.hdel('streamers', uuid);
+      return true;
     },
     getStreamers: () =>
       new Promise((resolve, reject) =>
@@ -69,6 +73,9 @@ export const root =
           resolve(res);
         })).then((result) => {
         console.log(result);
+        if (result == null) {
+          return [];
+        }
         return Object.keys(result).map(x => ({ uuid: x, username: result[x] }));
       }),
   };

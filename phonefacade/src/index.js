@@ -7,6 +7,7 @@ export const newConnection = (socket) => {
   console.log('New connection');
   let userId = null;
   let username = null;
+  let uuid = null;
 
   socket.on('login', (msg) => {
     console.log(`Login: ${JSON.stringify(msg)}`);
@@ -55,12 +56,19 @@ export const newConnection = (socket) => {
   socket.on('initStream', () => {
     streamClient.request('query initStream($data: String!) { initStream(username: $data) }', { data: username })
       .then((x) => {
-        socket.emit('initStream', { succeed: true, data: x.initStream });
+        uuid = x.initStream;
+        socket.emit('initStream', { succeed: true, data: uuid });
       })
       .catch((err) => {
         console.error(err);
         socket.emit('initStream', { succeed: false, message: `Error ${err}` });
       });
+  });
+
+  socket.on('disconnect', () => {
+    if (uuid !== null) {
+      streamClient.request('query removeStream($data: String!) { removeStream(uuid: $data) }', { data: uuid });
+    }
   });
 };
 
