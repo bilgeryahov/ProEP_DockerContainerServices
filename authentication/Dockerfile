@@ -11,4 +11,5 @@ RUN cd /src; npm install
 COPY . /src
 
 EXPOSE  9000
+HEALTHCHECK CMD curl --fail http://localhost:9000 || exit 1
 CMD ["/src/node_modules/.bin/babel-node", "/src/server.js"]
