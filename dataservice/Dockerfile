@@ -12,5 +12,5 @@ RUN cd /src; npm install
 COPY . /src
 
 EXPOSE  1984
-HEALTHCHECK CMD curl --fail http://localhost:2000 || exit 1
+HEALTHCHECK CMD wget -q -t 1 --spider http://localhost:1984 || exit 1
 CMD ["./src/wait-for-it.sh", "postgresql:5432", "--", "/src/node_modules/.bin/babel-node", "/src/server.js"]
