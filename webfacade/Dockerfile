@@ -11,4 +11,5 @@ RUN cd /src; npm install
 COPY . /src
 
 EXPOSE  9090
+HEALTHCHECK CMD wget -q -t 1 --spider http://localhost:9090 || exit 1
 CMD ["/src/node_modules/.bin/babel-node", "/src/server.js"]
