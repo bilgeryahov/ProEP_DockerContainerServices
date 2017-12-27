@@ -38,5 +38,4 @@ RUN ./configure --add-module=/src/nginx-rtmp-module-1.1.7.10 --with-file-aio \
 ADD nginx.conf /config/nginx.conf
 
 WORKDIR /
-HEALTHCHECK CMD wget -q -t 1 --spider http://localhost:1984 http://localhost:1776 || exit 1
 CMD "nginx"

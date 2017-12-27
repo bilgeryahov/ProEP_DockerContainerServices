@@ -12,5 +12,5 @@ COPY . /src
 
 EXPOSE  1996
 EXPOSE  1997
-HEALTHCHECK CMD wget -q -t 1 --spider http://localhost:1997 || exit 1
+HEALTHCHECK CMD wget -q -t 1 --spider http://localhost:1997/graphql/?query=%7Bhello%7D || exit 1
 CMD ["/src/node_modules/.bin/babel-node", "/src/server.js"]

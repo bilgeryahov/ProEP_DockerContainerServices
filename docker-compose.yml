@@ -58,13 +58,16 @@ services:
      - postgresql
     ports:
      - "2000:1984"
+    depends_on:
+      postgresql:
+        condition: service_healthy
     logging:
       driver: "json-file"
       options:
         max-size: "200k"
         max-file: "10"
   postgresql:
-    image: "postgres:alpine"
+    image: "healthcheck/postgres:alpine"
     restart: always
     volumes:
      - ../dockervolumes/postgres-data:/var/lib/postgresql/data
