@@ -21,6 +21,20 @@ export const newConnection = (socket) => {
   socket.join('singleroom'); // refactor later to work on multiple streams
   let userId = null;
   let username = null;
+  let room = null;
+
+  socket.on('joinRoom', (uuid) => {
+    if (room == null) { // leave old room if other one is joined
+      socket.leave(uuid);
+    }
+    console.log(`Joined ${uuid}`);
+    socket.join(uuid);
+    room = uuid;
+  });
+  socket.on('leaveRoom', (uuid) => {
+    socket.leave(uuid);
+    room = null;
+  });
 
   socket.on('login', (msg) => {
     console.log(`Login: ${JSON.stringify(msg)}`);
@@ -93,8 +107,8 @@ export const rabbitToSocket = (io) => {
   queuePromise.then((queue) => { // queue is loaded
     console.log('Connected to rabbitmq');
     queue.subscribe((message) => {
-      // console.log(`broadcast ${JSON.stringify(message)}`);
-      io.sockets.in('singleroom').emit('phonemeta', message);
+      console.log(`broadcast ${JSON.stringify(message)}`);
+      io.sockets.in(message.uuid).emit('phonemeta', message.data);
       // console.log('send');
     }); // pass the event to socket
   })

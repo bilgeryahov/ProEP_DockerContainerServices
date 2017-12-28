@@ -34,7 +34,7 @@ new Promise(resolve => connection.on('ready', resolve))
 export const schema = buildSchema(`
 type Query {
   hello: String
-  sendPhoneMeta(data: String!): Boolean!
+  sendPhoneMeta(data: String!, uuid: String!): Boolean!
   initStream(username: String!): String!
   removeStream(uuid: String!): Boolean!
   getStreamers: [Streamer]!
@@ -49,9 +49,9 @@ type Streamer {
 export const root =
   {
     hello: () => 'Hello world from stream!',
-    sendPhoneMeta: (data) => {
+    sendPhoneMeta: (metadata) => {
       // console.log(`publish ${JSON.stringify(data)}`);
-      connection.publish('phonemeta', JSON.parse(data.data));
+      connection.publish('phonemeta', { uuid: metadata.uuid, data: JSON.parse(metadata.data) });
       return true;
     },
     initStream: ({ username }) => {

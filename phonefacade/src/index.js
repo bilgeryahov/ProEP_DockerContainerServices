@@ -50,7 +50,7 @@ export const newConnection = (socket) => {
   });
 
   socket.on('phonemeta', msg =>
-    streamClient.request('query sendPhoneMeta($data: String!) { sendPhoneMeta(data: $data) }', { data: JSON.stringify(msg) })
+    streamClient.request('query sendPhoneMeta($data: String!, $uuid: String!) { sendPhoneMeta(data: $data, uuid: $uuid) }', { data: JSON.stringify(msg), uuid })
       // .then(() => console.log(`send message ${JSON.stringify(msg)}`))
       .catch(err => console.error(err)));
   socket.on('initStream', () => {
