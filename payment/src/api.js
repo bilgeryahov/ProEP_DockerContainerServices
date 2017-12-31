@@ -4,8 +4,8 @@ const config = require('./../config.json');
 const paypal = require('paypal-rest-sdk');
 
 const PORT = 1996; // Publicly accessible one for the redirects.
-const RETURN_URL = `http://40.68.124.79:${PORT}/success`;
-const CANCEL_URL = `http://40.68.124.79:${PORT}/cancel`;
+const RETURN_URL = `http://showmedocker.zapto.org:${PORT}/success`;
+const CANCEL_URL = `http://showmedocker.zapto.org:${PORT}/cancel`;
 
 paypal.configure({
   mode: config.environment,
