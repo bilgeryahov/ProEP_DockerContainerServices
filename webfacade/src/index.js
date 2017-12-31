@@ -9,8 +9,16 @@ const amqp = require('amqp');
 const connection = amqp.createConnection({ host: 'amqp://user:user@rabbit:5672' });
 
 // Join a queue
-const queuePromise = new Promise(resolve => connection.on('ready', resolve))
+const connectionPromise = new Promise(resolve => connection.on('ready', resolve));
+const queuePromise = connectionPromise
   .then(() => new Promise(resolve => connection.queue('phonemeta', resolve)))
+  .catch((err) => {
+    console.error(err);
+    process.exit(1); // If can't connect, restart the server
+  });
+
+const streamersPromise = connectionPromise
+  .then(() => new Promise(resolve => connection.queue('streamers', resolve)))
   .catch((err) => {
     console.error(err);
     process.exit(1); // If can't connect, restart the server
@@ -27,6 +35,7 @@ export const newConnection = (socket) => {
     if (room == null) { // leave old room if other one is joined
       socket.leave(uuid);
     }
+    socket.leave('streamers'); // unsub of list of streamers
     console.log(`Joined ${uuid}`);
     socket.join(uuid);
     room = uuid;
@@ -79,6 +88,7 @@ export const newConnection = (socket) => {
   socket.on('getStreamers', () => {
     clientStream.request('{getStreamers{username,uuid}}')
       .then((x) => {
+        socket.join('streamers');
         socket.emit('getStreamers', { succeed: true, data: x.getStreamers });
       })
       .catch((err) => {
@@ -109,6 +119,16 @@ export const rabbitToSocket = (io) => {
     queue.subscribe((message) => {
       console.log(`broadcast ${JSON.stringify(message)}`);
       io.sockets.in(message.uuid).emit('phonemeta', message.data);
+      // console.log('send');
+    }); // pass the event to socket
+  })
+    .catch(err => console.error(err));
+
+  streamersPromise.then((queue) => { // queue is loaded
+    console.log('Connected to rabbitmq streamers');
+    queue.subscribe((message) => {
+      console.log(`streamers ${JSON.stringify(message)}`);
+      io.sockets.in('streamers').emit('getStreamers', { succeed: true, data: message });
       // console.log('send');
     }); // pass the event to socket
   })

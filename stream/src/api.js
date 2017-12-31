@@ -46,6 +46,21 @@ type Streamer {
 }
 `);
 
+const getStreamerList = () => new Promise((resolve, reject) =>
+  client.hgetall('streamers', (err, res) => {
+    if (err) {
+      reject(err);
+    }
+
+    resolve(res);
+  })).then((result) => {
+  console.log(result);
+  if (result == null) {
+    return [];
+  }
+  return Object.keys(result).map(x => ({ uuid: x, username: result[x] }));
+});
+
 export const root =
   {
     hello: () => 'Hello world from stream!',
@@ -57,25 +72,14 @@ export const root =
     initStream: ({ username }) => {
       const uuid = uuidv4();
       client.hmset('streamers', { [uuid]: username });
+      getStreamerList().then((data) => { // asynchronuosly notify webfacade of the new streamer list
+        connection.publish('streamers', data);
+      });
       return uuid;
     },
     removeStream: ({ uuid }) => {
       client.hdel('streamers', uuid);
       return true;
     },
-    getStreamers: () =>
-      new Promise((resolve, reject) =>
-        client.hgetall('streamers', (err, res) => {
-          if (err) {
-            reject(err);
-          }
-
-          resolve(res);
-        })).then((result) => {
-        console.log(result);
-        if (result == null) {
-          return [];
-        }
-        return Object.keys(result).map(x => ({ uuid: x, username: result[x] }));
-      }),
+    getStreamers: getStreamerList,
   };
