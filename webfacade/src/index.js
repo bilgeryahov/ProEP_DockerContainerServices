@@ -101,8 +101,8 @@ export const newConnection = (socket) => {
       });
   });
 
-  socket.on('pay', () => {
-    clientPayment.request('query pay($username: String!){ pay(username: $username) { succeed message url } }', { username })
+  socket.on('pay', ({ subscribeTo }) => {
+    clientPayment.request('query pay($subscriber: String!, $subscribeTo: String!) { pay(subscriber: $subscriber, subscribeTo: $subscribeTo) { succeed message url} }', { subscriber: username, subscribeTo })
       .then((x) => {
         if (x.pay.succeed) {
           socket.emit('redirect', { url: x.pay.url });
