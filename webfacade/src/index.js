@@ -48,7 +48,7 @@ export const newConnection = (socket) => {
   socket.on('login', (msg) => {
     console.log(`Login: ${JSON.stringify(msg)}`);
     if ('name' in msg && 'pass' in msg) {
-      client.request('query login($name: String!, $pass: String!) { user(name: $name, pass: $pass) { id, subscribed } }', msg)
+      client.request('query login($name: String!, $pass: String!) { user(name: $name, pass: $pass) { id } }', msg)
         .then((x) => {
           if (userId != null) {
             socket.emit('login', { succeed: false, message: 'Already logged in' });
@@ -101,8 +101,8 @@ export const newConnection = (socket) => {
       });
   });
 
-  socket.on('pay', () => {
-    clientPayment.request('query pay($username: String!){ pay(username: $username) { succeed message url } }', { username })
+  socket.on('pay', ({ subscribeTo }) => {
+    clientPayment.request('query pay($subscriber: String!, $subscribeTo: String!) { pay(subscriber: $subscriber, subscribeTo: $subscribeTo) { succeed message url} }', { subscriber: username, subscribeTo })
       .then((x) => {
         if (x.pay.succeed) {
           socket.emit('redirect', { url: x.pay.url });

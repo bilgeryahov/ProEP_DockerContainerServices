@@ -16,7 +16,7 @@ paypal.configure({
 export const schema = buildSchema(`
 type Query {
   hello: String
-  pay(username: String!): Result!
+  pay(subscriber: String!, subscribeTo: String!): Result!
 }
 
 type Result {
@@ -29,14 +29,14 @@ type Result {
 export const root =
 {
   hello: () => 'Hello world from payment!',
-  pay: ({ username }) => {
+  pay: ({ subscriber, subscribeTo }) => {
     const CREATE_PAYMENT_JSON = {
       intent: 'sale',
       payer: {
         payment_method: 'paypal',
       },
       redirect_urls: {
-        return_url: `${RETURN_URL}&username=${username}`,
+        return_url: `${RETURN_URL}?subscriber=${subscriber}&subscribeTo=${subscribeTo}`,
         cancel_url: CANCEL_URL,
       },
       transactions: [{
