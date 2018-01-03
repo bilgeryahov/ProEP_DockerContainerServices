@@ -1,10 +1,12 @@
 import { buildSchema } from 'graphql';
+import { GraphQLClient } from 'graphql-request';
 
 const amqp = require('amqp');
 const uuidv4 = require('uuid/v4');
 const redis = require('redis');
 
 const client = redis.createClient('redis://redis/');
+const clientData = new GraphQLClient('http://dataservice:1984/graphql', { headers: {} });
 
 // RabbitMQ stuff
 const connection = amqp.createConnection({ host: 'amqp://user:user@rabbit:5672' });
@@ -38,6 +40,7 @@ type Query {
   initStream(username: String!): String!
   removeStream(uuid: String!): Boolean!
   getStreamers: [Streamer]!
+  getSubscribers(userid: String!): [Streamer]!
 }
 
 type Streamer {
@@ -82,4 +85,32 @@ export const root =
       return true;
     },
     getStreamers: getStreamerList,
+    getSubscribers: ({ userid }) => {
+      let subsribedTo = [];
+      // request from dataservice the list of streamers subscribed to
+      clientData.request('query getSubscribers($userid: String!){getSubscribers(userid: $userid){username}}', { userid })
+        .then((data) => {
+          console.log('Succeed request get subscribers');
+          subsribedTo = data.getSubscribers;
+          return getStreamerList(); // get from redis the list of online streamers
+        })
+        .then((data) => {
+          // merge subscribed with online streamers
+          const result = subsribedTo
+            .map((x) => {
+              // check of a stream for the username exists
+              const stream = data.find(s => s.username === x.username);
+              if (stream != null) {
+                return stream;
+              }
+              return { username: x.username, uuid: '' };
+            });
+          return Promise.resolve(result);
+        })
+        .catch((err) => {
+          console.log('Fail request get subsribers');
+          console.error(err);
+          return Promise.reject(err);
+        });
+    },
   };

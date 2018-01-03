@@ -1,5 +1,6 @@
 /* eslint-env node, mocha */
 import { graphql } from 'graphql';
+import { setTimeout } from 'timers';
 
 import {
   schema,
@@ -56,10 +57,11 @@ describe('Graphql', () => {
           })
           .then((response) => {
             if (!response.data.registerUser.succeed) {
-              return graphql(schema, '{ checkSubscribed (name: "testuser") }', root);
+              return new Promise(resolve => setTimeout(resolve, 100));
             }
             return Promise.reject(Error('User should already be registered, user could be made again'));
           })
+          .then(() => graphql(schema, '{ checkSubscribed (name: "testuser") }', root))
           .then((response) => {
             if (response.data.checkSubscribed === 0) {
               return graphql(schema, '{ subscribeUser (name: "testuser") { succeed message } }', root);
