@@ -63,9 +63,7 @@ export const root =
       return subscriberUser.getSubscribeTo();
     }
     throw new Error('Cannot find subscriberUser');
-  }).then((users) => {
-    return users.some(user => user.username === subscribeTo) ? 1 : 0;
-  }),
+  }).then(users => (users.some(user => user.username === subscribeTo) ? 1 : 0)),
   subscribeUser: ({ subscriber, subscribeTo }) => {
     let subscriberUserHolder = null;
     let subscribeToUserHolder = null;

@@ -19,7 +19,6 @@ type Query {
 type User {
   id: Int!
   email: String!
-  subscribed: Int!
 }
 
 type Result {
@@ -32,7 +31,7 @@ export const root =
 {
   hello: () => 'Hello world from authentication!',
   user: args =>
-    client.request('query login($name: String!, $pass: String!) { user(name: $name, pass: $pass) { id email subscribed } }', Object.assign(args, { pass: makeHash(args.pass) }))
+    client.request('query login($name: String!, $pass: String!) { user(name: $name, pass: $pass) { id email } }', Object.assign(args, { pass: makeHash(args.pass) }))
       .then(x => Promise.resolve(x.user))
       .catch(err => Promise.reject(err)),
   registerUser: (args) => {
