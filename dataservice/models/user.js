@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
     email: DataTypes.STRING,
   });
 
-  User.hasMany(User, { as: 'SubscribedTo' });
+  User.hasMany(User, { as: 'SubscribeTo' });
 
   return User;
 };

@@ -6,7 +6,7 @@ const models = require('../models');
 export const initDb = () => models.sequelize.sync().then(() =>
   models.User.destroy({ // Remove testdata before running
     where: {
-      $or: [{ username: 'testuser' }, { username: 'george' }, { username: 'steve' }, { username: 'georgesoroz' }, { username: 'asana' }],
+      $or: [{ username: 'testuser2' }, { username: 'testuser' }, { username: 'george' }, { username: 'steve' }, { username: 'georgesoroz' }, { username: 'asana' }],
     },
   }));
 
@@ -15,8 +15,8 @@ type Query {
   hello: String
   user(name: String!, pass: String!): User
   registerUser(name: String!, email: String!, pass: String!): Result
-  checkSubscribed(name: String!): Int!
-  subscribeUser(name: String!): Result
+  checkSubscribed(subscriber: String!, subscribeTo: String!): Int!
+  subscribeUser(subscriber: String!, subscribeTo: String!): Result
 }
 
 type User {
@@ -55,23 +55,46 @@ export const root =
         }
         return ({ succeed: false, message: 'Name or email already exists' });
       }),
-  checkSubscribed: ({ name }) => models.User.findOne({
-    attributes: ['subscribed'],
+  checkSubscribed: ({ subscriber, subscribeTo }) => models.User.findOne({
+    attributes: ['id', 'username'],
     where: {
-      username: name,
+      username: subscriber,
     },
-  }).then(x => x.subscribed),
-  subscribeUser: ({ name }) => models.User.findOne({
-    attributes: ['id', 'username', 'subscribed'],
-    where: {
-      username: name,
-    },
-  }).then((user) => {
-    if (user) {
-      return user.updateAttributes({ subscribed: 1 })
-        .then(() => ({ succeed: true, message: 'User subscribed' }));
+  }).then((subscriberUser) => {
+    if (subscriberUser) {
+      const users = subscriberUser.getSubscribeTo();
+      return Promise.resolve(users.some(user => user.username === subscribeTo) ? 1 : 0);
     }
-    return { succeed: false, message: 'Cant find user' };
+    return Promise.reject(new Error('Cannot find subscriberUser'));
   }),
+  subscribeUser: ({ subscriber, subscribeTo }) => {
+    let subscriberUserHolder = null;
+    let subscribeToUserHolder = null;
+
+    return models.User.findOne({
+      attributes: ['id', 'username'],
+      where: {
+        username: subscriber,
+      },
+    }).then((subscriberUser) => {
+      if (subscriberUser) {
+        subscriberUserHolder = subscriberUser;
+        return models.User.findOne({
+          attributes: ['id', 'username'],
+          where: {
+            username: subscribeTo,
+          },
+        });
+      }
+      return Promise.reject(new Error('Cannot find subscriberUser'));
+    }).then((subscribeToUser) => {
+      if (subscribeToUser) {
+        subscribeToUserHolder = subscribeToUser;
+        return subscriberUserHolder.addSubscribeTo(subscribeToUserHolder);
+      }
+      return Promise.reject(new Error('Cannot find subscribeToUser'));
+    }).then(() => Promise.resolve({ succeed: true }))
+      .catch(err => Promise.resolve({ succeed: false, message: JSON.stringify(err) }));
+  },
 };
 
