@@ -130,6 +130,7 @@ services:
     links:
      - rabbit
      - redis
+     - dataservice
     ports:
      - "1950:1950"
     logging:
