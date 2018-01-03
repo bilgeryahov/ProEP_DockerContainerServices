@@ -18,7 +18,9 @@ paypal.configure({
 router
   .route('/success')
   .get((req, res) => {
-    const { paymentId, PayerID, subscriber, subscribeTo } = req.query;
+    const {
+      paymentId, PayerID, subscriber, subscribeTo,
+    } = req.query;
 
     const EXECUTE_PAYMENT_JSON = {
       payer_id: PayerID,
@@ -33,12 +35,12 @@ router
     paypal.payment.execute(paymentId, EXECUTE_PAYMENT_JSON, (error, payment) => {
       if (error) {
         console.log(error.response);
-        res.status(500).json({ success: false , error: error});
+        res.status(500).json({ success: false, error });
       } else {
         console.log(JSON.stringify(payment));
         client.request('query subscribeUser($subscriber: String!, $subscribeTo: String!) { subscribeUser(subscriber: $subscriber, subscribeTo: $subscribeTo) { succeed message } }', { subscriber, subscribeTo })
           .then(() => res.status(201).json({ success: true }))
-          .catch((err) => res.status(500).json({ success: false , error: err}));
+          .catch(err => res.status(500).json({ success: false, error: err }));
       }
     });
   });
