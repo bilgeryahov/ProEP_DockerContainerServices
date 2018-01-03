@@ -90,6 +90,10 @@ export const newConnection = (socket) => {
       .then((x) => {
         socket.join('streamers');
         socket.emit('getStreamers', { succeed: true, data: x.getStreamers });
+        return clientStream.request('query getSubscribers($userid: String!){getSubscribers(userid: $userid){username,uuid}}', { userid: userId });
+      })
+      .then((x) => {
+        socket.emit('subsribers', { succeed: true, data: x.getSubscribers });
       })
       .catch((err) => {
         console.error(err);
