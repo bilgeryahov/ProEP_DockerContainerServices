@@ -22,7 +22,6 @@ type Query {
 type User {
   id: Int!
   email: String!
-  subscribed: Int!
 }
 
 type Result {
@@ -35,7 +34,7 @@ export const root =
 {
   hello: () => 'Hello world!',
   user: ({ name, pass }) => models.User.findOne({
-    attributes: ['id', 'email', 'subscribed'],
+    attributes: ['id', 'email'],
     where: {
       username: name,
       password: pass,
@@ -49,7 +48,6 @@ export const root =
             username: name,
             email,
             password: pass,
-            subscribed: 0,
           });
           return ({ succeed: true, message: '' });
         }
@@ -62,10 +60,11 @@ export const root =
     },
   }).then((subscriberUser) => {
     if (subscriberUser) {
-      const users = subscriberUser.getSubscribeTo();
-      return Promise.resolve(users.some(user => user.username === subscribeTo) ? 1 : 0);
+      return subscriberUser.getSubscribeTo();
     }
-    return Promise.reject(new Error('Cannot find subscriberUser'));
+    throw new Error('Cannot find subscriberUser');
+  }).then((users) => {
+    return users.some(user => user.username === subscribeTo) ? 1 : 0;
   }),
   subscribeUser: ({ subscriber, subscribeTo }) => {
     let subscriberUserHolder = null;
