@@ -98,11 +98,22 @@ describe('Graphql', () => {
           }),
     );
 
-    it('Login a user', () =>
-      graphql(schema, '{ user(name: "testuser", pass: "testpassword") { id } }', root)
+    it('Login a user and check subscriptions', () => {
+      let userId = -1;
+      return graphql(schema, '{ user(name: "testuser", pass: "testpassword") { id } }', root)
         .then((response) => {
           assert.ok(Number.isInteger(response.data.user.id));
-        }));
+          userId = response.data.user.id;
+          return graphql(schema, `{ getSubscribers(userid: ${userId}) }`, root);
+        })
+        .then((response) => {
+          if (response.data.getSubscribers.some(x => x === 'testuser2')) {
+            return Promise.resolve();
+          }
+          console.log(response);
+          return Promise.reject(Error('Couldn\'t find subscriber'));
+        });
+    });
 
     it('Not login a user with wrong password', () =>
       graphql(schema, '{ user(name: "testuser", pass: "testwrongpassword") { id } }', root).then((response) => {

@@ -88,7 +88,7 @@ export const root =
     getSubscribers: ({ userid }) => {
       let subsribedTo = [];
       // request from dataservice the list of streamers subscribed to
-      clientData.request('query getSubscribers($userid: String!){getSubscribers(userid: $userid){username}}', { userid })
+      clientData.request('query getSubscribers($userid: String!){getSubscribers(userid: $userid)}', { userid })
         .then((data) => {
           console.log('Succeed request get subscribers');
           subsribedTo = data.getSubscribers;

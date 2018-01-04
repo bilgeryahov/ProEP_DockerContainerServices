@@ -17,6 +17,7 @@ type Query {
   registerUser(name: String!, email: String!, pass: String!): Result
   checkSubscribed(subscriber: String!, subscribeTo: String!): Int!
   subscribeUser(subscriber: String!, subscribeTo: String!): Result
+  getSubscribers(userid: Int!): [String]!
 }
 
 type User {
@@ -93,5 +94,19 @@ export const root =
     }).then(() => Promise.resolve({ succeed: true }))
       .catch(err => Promise.resolve({ succeed: false, message: JSON.stringify(err) }));
   },
+  getSubscribers: ({ userid }) => models.User.findOne({
+    attributes: ['id', 'username'],
+    where: {
+      id: userid,
+    },
+  }).then((subscriberUser) => {
+    if (subscriberUser) {
+      return subscriberUser.getSubscribeTo();
+    }
+    throw new Error('Cannot find subscriberUser');
+  }).then((users) => {
+    console.log(users);
+    return users.map(x => x.username);
+  }),
 };
 
