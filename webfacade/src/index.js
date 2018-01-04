@@ -9,8 +9,16 @@ const amqp = require('amqp');
 const connection = amqp.createConnection({ host: 'amqp://user:user@rabbit:5672' });
 
 // Join a queue
-const queuePromise = new Promise(resolve => connection.on('ready', resolve))
+const connectionPromise = new Promise(resolve => connection.on('ready', resolve));
+const queuePromise = connectionPromise
   .then(() => new Promise(resolve => connection.queue('phonemeta', resolve)))
+  .catch((err) => {
+    console.error(err);
+    process.exit(1); // If can't connect, restart the server
+  });
+
+const streamersPromise = connectionPromise
+  .then(() => new Promise(resolve => connection.queue('streamers', resolve)))
   .catch((err) => {
     console.error(err);
     process.exit(1); // If can't connect, restart the server
@@ -21,11 +29,26 @@ export const newConnection = (socket) => {
   socket.join('singleroom'); // refactor later to work on multiple streams
   let userId = null;
   let username = null;
+  let room = null;
+
+  socket.on('joinRoom', (uuid) => {
+    if (room == null) { // leave old room if other one is joined
+      socket.leave(uuid);
+    }
+    socket.leave('streamers'); // unsub of list of streamers
+    console.log(`Joined ${uuid}`);
+    socket.join(uuid);
+    room = uuid;
+  });
+  socket.on('leaveRoom', (uuid) => {
+    socket.leave(uuid);
+    room = null;
+  });
 
   socket.on('login', (msg) => {
     console.log(`Login: ${JSON.stringify(msg)}`);
     if ('name' in msg && 'pass' in msg) {
-      client.request('query login($name: String!, $pass: String!) { user(name: $name, pass: $pass) { id, subscribed } }', msg)
+      client.request('query login($name: String!, $pass: String!) { user(name: $name, pass: $pass) { id } }', msg)
         .then((x) => {
           if (userId != null) {
             socket.emit('login', { succeed: false, message: 'Already logged in' });
@@ -65,7 +88,12 @@ export const newConnection = (socket) => {
   socket.on('getStreamers', () => {
     clientStream.request('{getStreamers{username,uuid}}')
       .then((x) => {
+        socket.join('streamers');
         socket.emit('getStreamers', { succeed: true, data: x.getStreamers });
+        return clientStream.request('query getSubscribers($userid: String!){getSubscribers(userid: $userid){username,uuid}}', { userid: userId });
+      })
+      .then((x) => {
+        socket.emit('subsribers', { succeed: true, data: x.getSubscribers });
       })
       .catch((err) => {
         console.error(err);
@@ -73,8 +101,8 @@ export const newConnection = (socket) => {
       });
   });
 
-  socket.on('pay', () => {
-    clientPayment.request('query pay($username: String!){ pay(username: $username) { succeed message url } }', { username })
+  socket.on('pay', ({ subscribeTo }) => {
+    clientPayment.request('query pay($subscriber: String!, $subscribeTo: String!) { pay(subscriber: $subscriber, subscribeTo: $subscribeTo) { succeed message url} }', { subscriber: username, subscribeTo })
       .then((x) => {
         if (x.pay.succeed) {
           socket.emit('redirect', { url: x.pay.url });
@@ -97,8 +125,18 @@ export const rabbitToSocket = (io) => {
   queuePromise.then((queue) => { // queue is loaded
     console.log('Connected to rabbitmq');
     queue.subscribe((message) => {
-      // console.log(`broadcast ${JSON.stringify(message)}`);
-      io.sockets.in('singleroom').emit('phonemeta', message);
+      console.log(`broadcast ${JSON.stringify(message)}`);
+      io.sockets.in(message.uuid).emit('phonemeta', message.data);
+      // console.log('send');
+    }); // pass the event to socket
+  })
+    .catch(err => console.error(err));
+
+  streamersPromise.then((queue) => { // queue is loaded
+    console.log('Connected to rabbitmq streamers');
+    queue.subscribe((message) => {
+      console.log(`streamers ${JSON.stringify(message)}`);
+      io.sockets.in('streamers').emit('getStreamers', { succeed: true, data: message });
       // console.log('send');
     }); // pass the event to socket
   })

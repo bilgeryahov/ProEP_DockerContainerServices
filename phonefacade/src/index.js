@@ -12,7 +12,7 @@ export const newConnection = (socket) => {
   socket.on('login', (msg) => {
     console.log(`Login: ${JSON.stringify(msg)}`);
     if ('name' in msg && 'pass' in msg) {
-      client.request('query login($name: String!, $pass: String!) { user(name: $name, pass: $pass) { id subscribed } }', msg)
+      client.request('query login($name: String!, $pass: String!) { user(name: $name, pass: $pass) { id } }', msg)
         .then((x) => {
           if (userId != null) {
             socket.emit('login', { succeed: false, message: 'Already logged in' });
@@ -50,7 +50,7 @@ export const newConnection = (socket) => {
   });
 
   socket.on('phonemeta', msg =>
-    streamClient.request('query sendPhoneMeta($data: String!) { sendPhoneMeta(data: $data) }', { data: JSON.stringify(msg) })
+    streamClient.request('query sendPhoneMeta($data: String!, $uuid: String!) { sendPhoneMeta(data: $data, uuid: $uuid) }', { data: JSON.stringify(msg), uuid })
       // .then(() => console.log(`send message ${JSON.stringify(msg)}`))
       .catch(err => console.error(err)));
   socket.on('initStream', () => {

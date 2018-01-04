@@ -1,5 +1,6 @@
 /* eslint-env node, mocha */
 import { graphql } from 'graphql';
+import { setTimeout } from 'timers';
 
 import {
   schema,
@@ -40,7 +41,7 @@ describe('Graphql', () => {
 
   describe('users', () => {
     it(
-      'Create a user, subscribe user',
+      'Create two users, subscribe one to the other.',
       () =>
         graphql(schema, '{ registerUser (name: "testuser", email: "a@a.com", pass: "testpassword") { succeed message } }', root)
           .then((response) => {
@@ -52,17 +53,29 @@ describe('Graphql', () => {
               console.log(response);
               return Promise.reject(Error('Exception happened'));
             }
-            return graphql(schema, '{ registerUser (name: "testuser", email: "a@a.com", pass: "testpassword") { succeed message } }', root);
+            return new Promise(resolve => setTimeout(resolve, 100));
           })
+          .then(() => graphql(schema, '{ registerUser (name: "testuser", email: "a@a.com", pass: "testpassword") { succeed message } }', root))
           .then((response) => {
             if (!response.data.registerUser.succeed) {
-              return graphql(schema, '{ checkSubscribed (name: "testuser") }', root);
+              return graphql(schema, '{ registerUser (name: "testuser2", email: "aa@a.com", pass: "testpassword2") { succeed message } }', root);
             }
             return Promise.reject(Error('User should already be registered, user could be made again'));
           })
           .then((response) => {
+            try {
+              if (!response.data.registerUser.succeed) {
+                return Promise.reject(Error('Couldn\'t create second user'));
+              }
+            } catch (err) {
+              console.log(response);
+              return Promise.reject(Error('Exception happened'));
+            }
+            return graphql(schema, '{ checkSubscribed (subscriber: "testuser", subscribeTo: "testuser2") }', root);
+          })
+          .then((response) => {
             if (response.data.checkSubscribed === 0) {
-              return graphql(schema, '{ subscribeUser (name: "testuser") { succeed message } }', root);
+              return graphql(schema, '{ subscribeUser (subscriber: "testuser", subscribeTo: "testuser2") { succeed message } }', root);
             }
             return Promise.reject(Error('User is subscribed, should not be'));
           })
@@ -71,7 +84,7 @@ describe('Graphql', () => {
               if (!response.data.subscribeUser.succeed) {
                 return Promise.reject(Error('Couldn\'t subscribe user'));
               }
-              return graphql(schema, '{ checkSubscribed (name: "testuser") }', root);
+              return graphql(schema, '{ checkSubscribed (subscriber: "testuser", subscribeTo: "testuser2") }', root);
             } catch (err) {
               console.log(response);
               return Promise.reject(Error('Exception happened'));
@@ -85,11 +98,22 @@ describe('Graphql', () => {
           }),
     );
 
-    it('Login a user', () =>
-      graphql(schema, '{ user(name: "testuser", pass: "testpassword") { id } }', root)
+    it('Login a user and check subscriptions', () => {
+      let userId = -1;
+      return graphql(schema, '{ user(name: "testuser", pass: "testpassword") { id } }', root)
         .then((response) => {
           assert.ok(Number.isInteger(response.data.user.id));
-        }));
+          userId = response.data.user.id;
+          return graphql(schema, `{ getSubscribers(userid: ${userId}) }`, root);
+        })
+        .then((response) => {
+          if (response.data.getSubscribers.some(x => x === 'testuser2')) {
+            return Promise.resolve();
+          }
+          console.log(response);
+          return Promise.reject(Error('Couldn\'t find subscriber'));
+        });
+    });
 
     it('Not login a user with wrong password', () =>
       graphql(schema, '{ user(name: "testuser", pass: "testwrongpassword") { id } }', root).then((response) => {

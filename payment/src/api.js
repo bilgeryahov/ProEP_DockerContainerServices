@@ -4,8 +4,8 @@ const config = require('./../config.json');
 const paypal = require('paypal-rest-sdk');
 
 const PORT = 1996; // Publicly accessible one for the redirects.
-const RETURN_URL = `http://40.68.124.79:${PORT}/success`;
-const CANCEL_URL = `http://40.68.124.79:${PORT}/cancel`;
+const RETURN_URL = `http://showmedocker.zapto.org:${PORT}/success`;
+const CANCEL_URL = `http://showmedocker.zapto.org:${PORT}/cancel`;
 
 paypal.configure({
   mode: config.environment,
@@ -16,7 +16,7 @@ paypal.configure({
 export const schema = buildSchema(`
 type Query {
   hello: String
-  pay(username: String!): Result!
+  pay(subscriber: String!, subscribeTo: String!): Result!
 }
 
 type Result {
@@ -29,14 +29,14 @@ type Result {
 export const root =
 {
   hello: () => 'Hello world from payment!',
-  pay: ({ username }) => {
+  pay: ({ subscriber, subscribeTo }) => {
     const CREATE_PAYMENT_JSON = {
       intent: 'sale',
       payer: {
         payment_method: 'paypal',
       },
       redirect_urls: {
-        return_url: `${RETURN_URL}&username=${username}`,
+        return_url: `${RETURN_URL}?subscriber=${subscriber}&subscribeTo=${subscribeTo}`,
         cancel_url: CANCEL_URL,
       },
       transactions: [{
