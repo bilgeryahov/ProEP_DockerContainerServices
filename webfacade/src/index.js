@@ -87,6 +87,10 @@ export const newConnection = (socket) => {
         socket.emit('paymentFailed', { message: `Error ${err}` });
       });
   });
+  
+  socket.on('chatMessage', (message) => {
+    socket.broadcast.emit(message);
+  });
 };
 
 export const rabbitToSocket = (io) => {
