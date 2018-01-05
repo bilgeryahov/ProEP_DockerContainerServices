@@ -33,7 +33,7 @@ const paymentPromise = connectionPromise
     process.exit(1); // If can't connect, restart the server
   });
 
-export const newConnection = (socket) => {
+export const newConnection = (socket, io) => {
   console.log('New connection');
   socket.join('singleroom'); // refactor later to work on multiple streams
   let userId = null;
@@ -147,7 +147,7 @@ export const newConnection = (socket) => {
   });
 
   socket.on('chatMessage', (message) => {
-    socket.to(room).emit('newMessage', { id: userId, user: username, msg: message });
+    io.sockets.in(room).emit('newMessage', { id: userId, user: username, msg: message });
   });
 };
 

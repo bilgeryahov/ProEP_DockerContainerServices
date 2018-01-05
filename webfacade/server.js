@@ -12,7 +12,7 @@ app.get('/', (req, res) => {
   res.send('Test: Hello world from Web Facade!');
 });
 
-io.on('connection', newConnection);
+io.on('connection', socket => newConnection(socket, io));
 rabbitToSocket(io);
 
 http.listen(PORT, () => {
