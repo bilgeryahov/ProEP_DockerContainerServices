@@ -117,7 +117,7 @@ export const newConnection = (socket) => {
   });
 
   socket.on('chatMessage', (message) => {
-    socket.emit('newMessage', { id: userId, user: username, msg: message });
+    io.emit('newMessage', { id: userId, user: username, msg: message });
   });
 };
 
