@@ -40,7 +40,7 @@ type Query {
   initStream(username: String!): String!
   removeStream(uuid: String!): Boolean!
   getStreamers: [Streamer]!
-  getSubscribers(userid: String!): [Streamer]!
+  getSubscribers(userid: Int!): [Streamer]!
 }
 
 type Streamer {
@@ -88,10 +88,11 @@ export const root =
     getSubscribers: ({ userid }) => {
       let subsribedTo = [];
       // request from dataservice the list of streamers subscribed to
-      clientData.request('query getSubscribers($userid: String!){getSubscribers(userid: $userid)}', { userid })
+      return clientData.request('query getSubscribers($userid: Int!){getSubscribers(userid: $userid)}', { userid })
         .then((data) => {
           console.log('Succeed request get subscribers');
           subsribedTo = data.getSubscribers;
+          console.log(data);
           return getStreamerList(); // get from redis the list of online streamers
         })
         .then((data) => {
@@ -105,7 +106,8 @@ export const root =
               }
               return { username: x.username, uuid: '' };
             });
-          return Promise.resolve(result);
+          console.log(result);
+          return result;
         })
         .catch((err) => {
           console.log('Fail request get subsribers');
