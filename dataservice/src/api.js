@@ -104,9 +104,6 @@ export const root =
       return subscriberUser.getSubscribeTo();
     }
     throw new Error('Cannot find subscriberUser');
-  }).then((users) => {
-    console.log(users);
-    return users.map(x => x.username);
-  }),
+  }).then(users => users.map(x => x.username)),
 };
 
