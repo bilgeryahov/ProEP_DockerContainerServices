@@ -84,8 +84,12 @@ services:
         max-file: "10"
   payment:
     build: payment
+    depends_on:
+      rabbit:
+        condition: service_healthy
     links:
      - dataservice
+     - rabbit
     ports:
       - "1996:1996"
       - "1997:1997"

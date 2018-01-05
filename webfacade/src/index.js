@@ -5,6 +5,8 @@ const clientStream = new GraphQLClient('http://stream:1950/graphql', { headers: 
 const clientPayment = new GraphQLClient('http://payment:1997/graphql', { headers: {} });
 const amqp = require('amqp');
 
+const userToConnections = {};
+
 // RabbitMQ stuff
 const connection = amqp.createConnection({ host: 'amqp://user:user@rabbit:5672' });
 
@@ -19,6 +21,13 @@ const queuePromise = connectionPromise
 
 const streamersPromise = connectionPromise
   .then(() => new Promise(resolve => connection.queue('streamers', resolve)))
+  .catch((err) => {
+    console.error(err);
+    process.exit(1); // If can't connect, restart the server
+  });
+
+const paymentPromise = connectionPromise
+  .then(() => new Promise(resolve => connection.queue('payment', resolve)))
   .catch((err) => {
     console.error(err);
     process.exit(1); // If can't connect, restart the server
@@ -55,6 +64,12 @@ export const newConnection = (socket) => {
           } else if (x.user != null && Number.isInteger(x.user.id)) {
             userId = x.user.id;
             username = msg.name;
+            // Remember connection per username
+            if (!(username in userToConnections)) {
+              userToConnections[username] = [];
+            }
+            userToConnections[username].push(socket);
+
             socket.emit('login', { succeed: true, message: '', userData: x.user });
           } else {
             socket.emit('login', { succeed: false, message: 'Wrong username or password' });
@@ -63,6 +78,17 @@ export const newConnection = (socket) => {
         .catch(err => socket.emit('login', { succeed: false, message: `Error ${err}` }));
     } else {
       socket.emit('login', { succeed: false, message: 'Give both username and password' });
+    }
+  });
+
+  socket.on('disconnect', () => {
+    if (username != null) {
+      if (userToConnections[username].length === 1) {
+        delete userToConnections[username];
+      } else {
+        // remove current connection, if user is connected multiple times
+        userToConnections[username] = userToConnections[username].filter(x => x !== socket);
+      }
     }
   });
 
@@ -90,16 +116,20 @@ export const newConnection = (socket) => {
       .then((x) => {
         socket.join('streamers');
         socket.emit('getStreamers', { succeed: true, data: x.getStreamers });
-        return clientStream.request('query getSubscribers($userid: String!){getSubscribers(userid: $userid){username,uuid}}', { userid: userId });
-      })
-      .then((x) => {
-        socket.emit('subsribers', { succeed: true, data: x.getSubscribers });
+        return socket.sendSubsribers;
       })
       .catch((err) => {
         console.error(err);
         socket.emit('getStreamers', { succeed: false, message: `Error ${err}` });
       });
   });
+
+  socket.sendSubsribers = () => { // eslint-disable-line
+    return clientStream.request('query getSubscribers($userid: String!){getSubscribers(userid: $userid){username,uuid}}', { userid: userId })
+      .then((x) => {
+        socket.emit('subsribers', { succeed: true, data: x.getSubscribers });
+      });
+  };
 
   socket.on('pay', ({ subscribeTo }) => {
     clientPayment.request('query pay($subscriber: String!, $subscribeTo: String!) { pay(subscriber: $subscriber, subscribeTo: $subscribeTo) { succeed message url} }', { subscriber: username, subscribeTo })
@@ -138,6 +168,20 @@ export const rabbitToSocket = (io) => {
       console.log(`streamers ${JSON.stringify(message)}`);
       io.sockets.in('streamers').emit('getStreamers', { succeed: true, data: message });
       // console.log('send');
+    }); // pass the event to socket
+  })
+    .catch(err => console.error(err));
+
+  paymentPromise.then((queue) => { // queue is loaded
+    console.log('Connected to rabbitmq payment');
+    queue.subscribe((message) => {
+      console.log(`payment ${JSON.stringify(message)}`);
+      if (message in userToConnections) {
+        console.log('user is connected');
+        userToConnections[message].array.forEach((socket) => {
+          socket.sendSubsribers();
+        });
+      }
     }); // pass the event to socket
   })
     .catch(err => console.error(err));
