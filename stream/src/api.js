@@ -40,7 +40,7 @@ type Query {
   initStream(username: String!): String!
   removeStream(uuid: String!): Boolean!
   getStreamers: [Streamer]!
-  getSubscribers(userid: Int!): [Streamer]!
+  getSubscribers(userid: String!): [Streamer]!
 }
 
 type Streamer {
@@ -92,7 +92,7 @@ export const root =
     getSubscribers: ({ userid }) => {
       let subsribedTo = [];
       // request from dataservice the list of streamers subscribed to
-      return clientData.request('query getSubscribers($userid: Int!){getSubscribers(userid: $userid)}', { userid })
+      return clientData.request('query getSubscribers($userid: String!){getSubscribers(userid: $userid)}', { userid })
         .then((data) => {
           console.log('Succeed request get subscribers');
           subsribedTo = data.getSubscribers;

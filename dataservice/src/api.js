@@ -17,7 +17,7 @@ type Query {
   registerUser(name: String!, email: String!, pass: String!): Result
   checkSubscribed(subscriber: String!, subscribeTo: String!): Int!
   subscribeUser(subscriber: String!, subscribeTo: String!): Result
-  getSubscribers(userid: Int!): [String]!
+  getSubscribers(userid: String!): [String]!
 }
 
 type User {
@@ -97,7 +97,7 @@ export const root =
   getSubscribers: ({ userid }) => models.User.findOne({
     attributes: ['id', 'username'],
     where: {
-      id: userid,
+      username: userid,
     },
   }).then((subscriberUser) => {
     if (subscriberUser) {

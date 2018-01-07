@@ -5,8 +5,6 @@ const clientStream = new GraphQLClient('http://stream:1950/graphql', { headers: 
 const clientPayment = new GraphQLClient('http://payment:1997/graphql', { headers: {} });
 const amqp = require('amqp');
 
-const userToConnections = {};
-
 // RabbitMQ stuff
 const connection = amqp.createConnection({ host: 'amqp://user:user@rabbit:5672' });
 
@@ -33,9 +31,13 @@ const paymentPromise = connectionPromise
     process.exit(1); // If can't connect, restart the server
   });
 
+const getSubsribers = userid => clientStream.request(
+  'query getSubscribers($userid: Int!){getSubscribers(userid: $userid){username,uuid}}',
+  { userid },
+);
+
 export const newConnection = (socket, io) => {
   console.log('New connection');
-  socket.join('singleroom'); // refactor later to work on multiple streams
   let userId = null;
   let username = null;
   let room = null;
@@ -65,10 +67,7 @@ export const newConnection = (socket, io) => {
             userId = x.user.id;
             username = msg.name;
             // Remember connection per username
-            if (!(username in userToConnections)) {
-              userToConnections[username] = [];
-            }
-            userToConnections[username].push(socket);
+            socket.join(username);
 
             socket.emit('login', { succeed: true, message: '', userData: username });
           } else {
@@ -78,17 +77,6 @@ export const newConnection = (socket, io) => {
         .catch(err => socket.emit('login', { succeed: false, message: `Error ${err}` }));
     } else {
       socket.emit('login', { succeed: false, message: 'Give both username and password' });
-    }
-  });
-
-  socket.on('disconnect', () => {
-    if (username != null) {
-      if (userToConnections[username].length === 1) {
-        delete userToConnections[username];
-      } else {
-        // remove current connection, if user is connected multiple times
-        userToConnections[username] = userToConnections[username].filter(x => x !== socket);
-      }
     }
   });
 
@@ -116,20 +104,16 @@ export const newConnection = (socket, io) => {
       .then((x) => {
         socket.join('streamers');
         socket.emit('getStreamers', { succeed: true, data: x.getStreamers });
-        return socket.sendSubsribers();
+        return getSubsribers(username);
+      })
+      .then((x) => {
+        socket.emit('subsribers', { succeed: true, data: x.getSubscribers });
       })
       .catch((err) => {
         console.error(err);
         socket.emit('getStreamers', { succeed: false, message: `Error ${err}` });
       });
   });
-
-  socket.sendSubsribers = () => { // eslint-disable-line
-    return clientStream.request('query getSubscribers($userid: Int!){getSubscribers(userid: $userid){username,uuid}}', { userid: userId })
-      .then((x) => {
-        socket.emit('subsribers', { succeed: true, data: x.getSubscribers });
-      });
-  };
 
   socket.on('pay', ({ subscribeTo }) => {
     clientPayment.request('query pay($subscriber: String!, $subscribeTo: String!) { pay(subscriber: $subscriber, subscribeTo: $subscribeTo) { succeed message url} }', { subscriber: username, subscribeTo })
@@ -166,7 +150,10 @@ export const rabbitToSocket = (io) => {
     console.log('Connected to rabbitmq streamers');
     queue.subscribe((message) => {
       console.log(`streamers ${JSON.stringify(message)}`);
-      io.sockets.in('streamers').emit('getStreamers', { succeed: true, data: message });
+      const username = message.subscriber;
+      getSubsribers(username).then((x) => {
+        io.sockets.in(username).emit('subsribers', { succeed: true, data: x.getSubscribers });
+      });
       // console.log('send');
     }); // pass the event to socket
   })
@@ -176,12 +163,7 @@ export const rabbitToSocket = (io) => {
     console.log('Connected to rabbitmq payment');
     queue.subscribe((message) => {
       console.log(`payment ${JSON.stringify(message.subscriber)}`);
-      if (message in userToConnections) {
-        console.log('user is connected');
-        userToConnections[message.subscriber].array.forEach((socket) => {
-          socket.sendSubsribers();
-        });
-      }
+      io.sockets.in(message.subscriber).emit('getStreamers', { succeed: true, data: message });
     }); // pass the event to socket
   })
     .catch(err => console.error(err));
