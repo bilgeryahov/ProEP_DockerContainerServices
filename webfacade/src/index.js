@@ -32,7 +32,7 @@ const paymentPromise = connectionPromise
   });
 
 const getSubsribers = userid => clientStream.request(
-  'query getSubscribers($userid: Int!){getSubscribers(userid: $userid){username,uuid}}',
+  'query getSubscribers($userid: String!){getSubscribers(userid: $userid){username,uuid}}',
   { userid },
 );
 
