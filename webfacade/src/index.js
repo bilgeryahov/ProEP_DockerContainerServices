@@ -150,10 +150,7 @@ export const rabbitToSocket = (io) => {
     console.log('Connected to rabbitmq streamers');
     queue.subscribe((message) => {
       console.log(`streamers ${JSON.stringify(message)}`);
-      const username = message.subscriber;
-      getSubsribers(username).then((x) => {
-        io.sockets.in(username).emit('subsribers', { succeed: true, data: x.getSubscribers });
-      });
+      io.sockets.in('streamers').emit('getStreamers', { succeed: true, data: message });
       // console.log('send');
     }); // pass the event to socket
   })
@@ -163,7 +160,10 @@ export const rabbitToSocket = (io) => {
     console.log('Connected to rabbitmq payment');
     queue.subscribe((message) => {
       console.log(`payment ${JSON.stringify(message.subscriber)}`);
-      io.sockets.in(message.subscriber).emit('getStreamers', { succeed: true, data: message });
+      const username = message.subscriber;
+      getSubsribers(username).then((x) => {
+        io.sockets.in(username).emit('subsribers', { succeed: true, data: x.getSubscribers });
+      });
     }); // pass the event to socket
   })
     .catch(err => console.error(err));
