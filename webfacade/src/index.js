@@ -116,7 +116,7 @@ export const newConnection = (socket, io) => {
       .then((x) => {
         socket.join('streamers');
         socket.emit('getStreamers', { succeed: true, data: x.getStreamers });
-        return socket.sendSubsribers;
+        return socket.sendSubsribers();
       })
       .catch((err) => {
         console.error(err);
