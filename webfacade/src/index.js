@@ -55,7 +55,7 @@ export const newConnection = (socket, io) => {
   });
 
   socket.on('login', (msg) => {
-    console.log(`Login: ${JSON.stringify(msg)}`);
+    // console.log(`Login: ${JSON.stringify(msg)}`);
     if ('name' in msg && 'pass' in msg) {
       client.request('query login($name: String!, $pass: String!) { user(name: $name, pass: $pass) { id } }', msg)
         .then((x) => {

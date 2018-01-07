@@ -104,11 +104,11 @@ export const root =
           const result = subsribedTo
             .map((x) => {
               // check of a stream for the username exists
-              const stream = data.find(s => s.username === x.username);
+              const stream = data.find(s => s.username === x);
               if (stream != null) {
                 return stream;
               }
-              return { username: x.username, uuid: '' };
+              return { username: x, uuid: '' };
             });
           console.log(result);
           return result;
