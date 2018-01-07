@@ -57,7 +57,7 @@ router
         console.log(JSON.stringify(payment));
         client.request('query subscribeUser($subscriber: String!, $subscribeTo: String!) { subscribeUser(subscriber: $subscriber, subscribeTo: $subscribeTo) { succeed message } }', { subscriber, subscribeTo })
           .then(() => {
-            connection.publish('payment', subscriber);
+            connection.publish('payment', { subscriber });
             res.status(201).json({ success: true });
           })
           .catch(err => res.status(500).json({ success: false, error: err }));

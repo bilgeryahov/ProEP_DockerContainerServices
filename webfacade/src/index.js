@@ -175,10 +175,10 @@ export const rabbitToSocket = (io) => {
   paymentPromise.then((queue) => { // queue is loaded
     console.log('Connected to rabbitmq payment');
     queue.subscribe((message) => {
-      console.log(`payment ${JSON.stringify(message)}`);
+      console.log(`payment ${JSON.stringify(message.subscriber)}`);
       if (message in userToConnections) {
         console.log('user is connected');
-        userToConnections[message].array.forEach((socket) => {
+        userToConnections[message.subscriber].array.forEach((socket) => {
           socket.sendSubsribers();
         });
       }
