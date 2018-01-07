@@ -70,7 +70,7 @@ export const newConnection = (socket, io) => {
             }
             userToConnections[username].push(socket);
 
-            socket.emit('login', { succeed: true, message: '', userData: x.user });
+            socket.emit('login', { succeed: true, message: '', userData: username });
           } else {
             socket.emit('login', { succeed: false, message: 'Wrong username or password' });
           }
