@@ -125,7 +125,7 @@ export const newConnection = (socket, io) => {
   });
 
   socket.sendSubsribers = () => { // eslint-disable-line
-    return clientStream.request('query getSubscribers($userid: String!){getSubscribers(userid: $userid){username,uuid}}', { userid: userId })
+    return clientStream.request('query getSubscribers($userid: Int!){getSubscribers(userid: $userid){username,uuid}}', { userid: userId })
       .then((x) => {
         socket.emit('subsribers', { succeed: true, data: x.getSubscribers });
       });
