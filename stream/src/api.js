@@ -64,6 +64,11 @@ const getStreamerList = () => new Promise((resolve, reject) =>
   return Object.keys(result).map(x => ({ uuid: x, username: result[x] }));
 });
 
+const publishStreamers = () => getStreamerList().then((data) => {
+  // asynchronuosly notify webfacade of the new streamer list
+  connection.publish('streamers', data);
+});
+
 export const root =
   {
     hello: () => 'Hello world from stream!',
@@ -75,13 +80,12 @@ export const root =
     initStream: ({ username }) => {
       const uuid = uuidv4();
       client.hmset('streamers', { [uuid]: username });
-      getStreamerList().then((data) => { // asynchronuosly notify webfacade of the new streamer list
-        connection.publish('streamers', data);
-      });
+      publishStreamers();
       return uuid;
     },
     removeStream: ({ uuid }) => {
       client.hdel('streamers', uuid);
+      publishStreamers();
       return true;
     },
     getStreamers: getStreamerList,
